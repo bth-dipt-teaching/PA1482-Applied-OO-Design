@@ -14,6 +14,13 @@
 - Barnes & Kölling Chapter 1, Objects and Classes
 - Barnes & Kölling Chapter 2, Understanding Class Definitions
 
+- Objects, Classes, Methods, and Attributes
+- Built in data types
+- Fundamental Input and Output
+- Conditional Execution: ~if~
+
+- Design Philosophy: /Program objects represent real world entities/
+- Design Principle: /Low Coupling/
 * Objects and Classes
 - Object
   - Representation of /a single entity/
