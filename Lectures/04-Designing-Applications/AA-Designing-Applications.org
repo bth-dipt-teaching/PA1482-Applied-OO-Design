@@ -1,0 +1,356 @@
+#+Title: Designing Applications
+#+Author: Mikael Svahnberg
+#+Email: Mikael.Svahnberg@bth.se
+#+Date: 2023-08-25
+#+EPRESENT_FRAME_LEVEL: 1
+#+OPTIONS: email:t <:t todo:t f:t ':t H:2
+#+STARTUP: beamer
+
+#+LATEX_CLASS_OPTIONS: [10pt,t,a4paper]
+#+BEAMER_THEME: BTH_msv
+
+
+* Introduction
+- Barnes & Kölling Chapter 15, Designing Applications
+
+- Object Oriented Analysis and Design
+- UML (Unified Modelling Language) / RUP
+- Discovering Classes
+- Designing Interfaces
+
+#+ATTR_ORG: :width 500
+[[./arne01.png]]
+* Discussion: Classes and Attributes :Discussion:
+   - How can we find / What are:
+     - Classes
+     - Attributes
+     - Associations
+   - What is the difference between an /Attribute/ and a /Class/
+* Identifying Classes
+   | Category              | Examples  |                    |
+   |-----------------------+-----------+--------------------|
+   | Physical Objects      | POST      | Aeroplane          |
+   | Places                | Store     | Aerport            |
+   | Transactions          | Payment   | Reservation        |
+   | Containers            | Basket    | Aeroplane          |
+   | Things in Container   | Item      | Passenger          |
+   | Events                | Sale      | Flight             |
+   | Description of Things | Sale Item | Flight Description |
+   | Records, Contracts    | Receipt   | Ticket             |
+   |-----------------------+-----------+--------------------|
+* Finding Classes
+   - Look for /nouns/
+   - /verbs/ may be methods on the nouns.
+     - On what noun does the verb operate?
+
+   Sources:     
+   - Textual description of problem domain
+   - Requirements
+   - Use-cases
+
+   Cave!
+   - Natural language is ambiguous
+   - Class or Attribute? Decide for now, may change later.
+* Scenarios and Responsibilities
+- Walk through what needs to happen in the system to solve a particular task.
+- A team can "role play" as objects in a scenario.
+- Start with a simple high-level description
+- Follow the execution to define /Responsibilities/ , methods, and new classes.
+
+#+begin_quote
+A customer calls the cinema and wants to make a reservation for two
+seats tonight to watch the movie /Ben Hur/. The cinema employee uses the
+booking system to find and reserve two seats on the third row.
+#+end_quote
+
+1. Which class do we start with? =BookingSystem=
+2. What do we do? =search for show by title and day=
+   - ~search()~ is a method on ~BookingSystem~
+   - ~Show~ is a new class which we did not see in the initial description.
+3. How does ~BookingSystem~ find the shows?
+   - =BookingSystem= already has one responsibility: Interface with the cinema employee
+   - Better to delegate management of shows to another class: ~ShowCollection~
+
+\dots and so on. *Discuss* what is the next step?
+* More on class Responsibilities
+- Design Principle: /High Cohesion/
+
+The methods and attributes in a class should all work within
+ a /small and well-defined area of responsibility/.
+
+- More responsibilities \rightarrow more methods that do not work on the same underlying data
+- Add new classes instead
+* Attributes
+   - Logical value of an element
+     - Examples: /name, quantity, status, .../
+     - Hint: Builtin data types
+       - String, int, date
+       - But also simple user-defined types such as /address, personnummer, .../
+   - *Keep Attributes Simple*
+* Associations
+   An association is a
+   - relationship between concepts
+   - indicates a meaningful and interesting connection
+
+   Types
+   - Need-to-know (preserved for some time; needs to maintained by software)
+   - Comprehension-only (used to understand domain)
+* Finding Associations
+   | Category                       | Examples                    |
+   |--------------------------------+-----------------------------|
+   | A -- is a part of -- B         | Salesitem -- Sale           |
+   |                                | Wing -- Aeroplane           |
+   | A -- is contained in -- B      | Item -- Store               |
+   |                                | Seat -- Flight              |
+   | A -- is a description for -- B | ItemDescription -- Item     |
+   |                                | FlightInformation -- Flight |
+   | A -- is known/recorded in -- B | Sale -- POST                |
+   |                                | Booking -- Flight           |
+   | A -- is owned by -- B          | Store -- Company            |
+   | A -- related transactions -- B | Payment -- Sale             |
+   |                                | Booking -- Ticket           |
+   |--------------------------------+-----------------------------|
+* Discussion: Multiplicity :Discussion:
+- One object of type A has an association to a number of objects of type B
+
+#+begin_src plantuml :file CD-Multiplicity.png
+A - B
+
+Customer - Ticket
+#+end_src     
+
+#+RESULTS:
+[[file:CD-Multiplicity.png]]
+
+- one to one A -- B
+- one to specific number A -- "5" B
+- one to range A -- "1..10" B
+- one to at least one A -- "+" B
+- one to at least specific number A -- "10+" B
+- one to any number A -- "*" B
+- many to many A "10" -- "5" B
+
+- /Always look at multiplicity from the perspective of a single object/
+* More on Classes and Objects
+- Real world is full of /Objects/ and no classes
+- A /Class/ is a collective description of objects that look the same or
+  behave in the same way
+
+- When a new object is introduced, we have the choice to:
+  1. Create a new object of an existing class, e.g. ~new Ticket()~
+     and set the attributes on this new object to whatever makes this object unique.
+  2. Create a complete new class to describe this new object,
+     then create a new object based on this new class.
+  3. Inherit from an existing class and only define what differs.
+     then create a new object based on this new sub-class.
+
+- Either way, there are a few terms we need to keep in mind:
+  - The /name of the variable/ in which we store a reference to the object
+    - This doesn't really have anything to do with the actual object.
+  - The /Class/ we use as a template for the object
+  - The /attributes/ that a class declares that an object must have
+  - The /values/ of the attributes in an object
+    - *These values can be, and often are, references to other objects.*
+
+- Interactions between objects are modelled as associations between classes
+#+begin_src plantuml :file OD-Interacting.png
+object "anne:Customer" as anne
+note top : Why is "anne" a bad name for this variable?
+object "bob:Customer" as bob
+object "t1:Ticket" as ticket
+note right : Why is "t1" almost as bad?
+
+anne : name="Anne"
+bob : name="Bob"
+ticket : movie="Spartacus"
+ticket : date="tonight"
+ticket : time="19:00"
+
+anne -- ticket
+bob -- ticket
+
+Class Customer
+Customer : -name:String
+Class Ticket
+Ticket : -movie:String
+Ticket : -date:Date
+Ticket : -time:Time
+Customer - Ticket
+#+end_src
+
+#+RESULTS:
+[[file:OD-Interacting.png]]
+* The UML Way
+** Use Cases
+  - The starting scenario we used earlier
+  - More details on the specific interaction
+
+#+begin_quote
+*Use Case* Reserve Seats for Show
+*Actors* Customer, Cinema Employee
+*Desciption* A customer calls the cinema and wants to make a reservation for two
+seats tonight to watch the movie /Ben Hur/. The cinema employee uses the
+booking system to find and reserve two seats on the third row.
+
+*Main Course of Events*
+| Actor                                                         | System                                 |
+|---------------------------------------------------------------+----------------------------------------|
+| 1. The employee searches for showings of "Ben Hur" today      |                                        |
+|                                                               | 2. The system lists all shows          |
+| 3. The employee asks the customer which show they wish to see |                                        |
+| 4. The employee selects the "19:00" show.                     |                                        |
+|                                                               | 5. The system lists available seats.   |
+| 6. The employee asks the customer how many seats they want    |                                        |
+| and where they want to sit.                                   |                                        |
+| 7. The employee selects two seats on the third row.           |                                        |
+|                                                               | 8. The system reserves the two seats.  |
+|                                                               | 9. The system confirms the reservation |
+|                                                               | and returns a reservation code.        |
+| 10. The employee gives the reservation code to the customer   |                                        |
+| and ends the all.                                             |                                        |
+|---------------------------------------------------------------+----------------------------------------|
+#+end_quote
+
+** Interaction Diagrams
+#+begin_src plantuml :file ID-BookTicket.png
+[-> ":BookingSystem" : search("Ben Hur", "tonight")
+activate ":BookingSystem"
+":BookingSystem" -> ":ShowCollection" : search(movieTitle, date)
+activate ":ShowCollection"
+":BookingSystem" <-- ":ShowCollection" : matchingShows
+deactivate ":ShowCollection"
+collections "matchingShows:Show"
+":BookingSystem" -> "matchingShows:Show" : getDetails()
+activate "matchingShows:Show"
+":BookingSystem" <-- "matchingShows:Show" : time of show
+deactivate "matchingShows:Show"
+[<-- ":BookingSystem" : list of times
+deactivate ":BookingSystem"
+
+#+end_src
+
+#+RESULTS:
+[[file:ID-BookTicket.png]]
+
+* Discussion: Example :Discussion:
+#+BEGIN_SRC plantuml :file FExampleUniversity.png :exports results
+class Department {
++Name : String
++HoD : String
+}
+
+class Person {
++Name : String
++email(String Subject, String Body)
+}
+
+class Course {
++Name : String
++Code : String
+}
+
+class Student {
++Bully()
+}
+
+class Teacher {
++Fire()
+}
+
+
+class Exam {
++Datetime : DateTime
++Author()
++Write()
+}
+
+class Lecture {
++Datetime : DateTime
++Conduct()
++Visit()
+}
+
+Department "1..5" -- "0..200" Course
+Department "1" -- "1+" Teacher
+Department -- "*" Student
+
+Course -- "1..20" Lecture
+Course -- "1..3" Exam
+
+Person <|-- Student
+Person y<|-- Teacher
+
+Student -- "1+" Lecture : Attends >
+Teacher -- "*" Lecture : Teaches >
+Student - "*" Student : Knows >
+note on link: Note the Reflexive Association
+
+Student -- Exam : Writes >
+Teacher -- Exam : Authors >
+#+END_SRC
+
+#+RESULTS:
+[[file:FExampleUniversity.png]]
+
+* Introducing Design Patterns
+** Christopher Polhem, father of Design Patterns?
+#+ATTR_LATEX: :height 6cm
+#+ATTR_ORG: :width 600
+[[file:./IPolhem.jpg]]
+** Patterns -- a brief introduction
+  - Design patterns are reusable solutions to known problems
+    - With known consequences
+    - "encoded experience"
+    - Codified in a structured format
+    - named
+  - There is nothing that /requires/ you to use design patterns; they are a convenience.
+  - Design patterns focus primarily on structure (class view), and interaction (sequence diagrams).
+
+ *Responsibility Driven Design*
+** Some Common Design Patterns
+From Gamma, E., Helm, R., Johnson, R., & Vlissides, J., /Design
+patterns: elements of reusable object-oriented languages and systems/
+(1994), Reading MA: Addison-Wesley.
+
+  1. Strategy
+  2. State
+  3. Observer
+  4. Facade, Wrapper, Adapter
+  5. Abstract Facory
+  6. Singleton
+  7. Builder
+  8. Command
+  9. Interpreter
+  10. Visitor
+
+ Barnes and Kölling, Ch15:
+- Decorator \approx Facade, Adapter
+- Singleton
+- Factory Method \in Abstract Factory
+- Observer
+** Exampe: Decorator Pattern
+- Commonly used in Java APIs
+- A more low-level API class is /decorated/ with a more advanced set of methods.
+
+#+begin_src plantuml :file DP-Decorator.png
+BufferedReader - Reader : Decorates >
+
+Reader : +boolean ready()
+Reader : +int read()
+Reader : +int read(char [] cbuf)
+Reader : +void reset()
+
+BufferedReader : +BufferedReader(Reader in)
+BufferedReader : +String readLine()
+BufferedReader : +boolean ready()
+BufferedReader : +int read()
+BufferedReader : +int read(char [] cbuf)
+BufferedReader : +void reset()
+#+end_src
+
+#+RESULTS:
+[[file:DP-Decorator.png]]
+
+- Yes, ~BufferedReader~ is an extension of ~Reader~
+  - that adds a few methods such as ~readLine()~
+  - we will introduce Inheritance soon.
