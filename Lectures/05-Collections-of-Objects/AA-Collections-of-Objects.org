@@ -1,0 +1,878 @@
+#+Title: Collections of Objects
+#+Author: Mikael Svahnberg
+#+Email: Mikael.Svahnberg@bth.se
+#+Date: 2023-08-30
+#+EPRESENT_FRAME_LEVEL: 1
+#+OPTIONS: email:t <:t todo:t f:t ':t H:2
+#+STARTUP: beamer
+
+#+LATEX_CLASS_OPTIONS: [10pt,t,a4paper]
+#+BEAMER_THEME: BTH_msv
+
+* Introduction
+- Barnes & Kölling Chapter 4, Grouping Objects
+- Barnes & Kölling Chapter 7, Fixed-Size Collections -- Arrays
+
+- Collections of Objects
+  - ArrayList
+  - Array
+- Iteration
+  - Iterators
+  - for-each
+  - ~while~
+  - ~for~
+- Java Standard Library
+- C++ Standard Libraries
+* Collections
+- Examples
+  - A /collection of Customers/
+  - A /collection of Movie Shows/
+  - A Cinema has /many Seats/
+  - A Customer has /one or several Tickets/
+- Shown in Class Diagrams:
+
+#+begin_src plantuml :file CD-Collection.png
+Customer - "*" Ticket
+#+end_src
+
+#+RESULTS:
+[[file:CD-Collection.png]]
+* Fixed or Flexible Size
+- /Sometimes/ the collection has a fixed size
+  - Or at least a fixed upper bound
+- /Most of the time/, the size of a collection is not known at design time.
+
+*Prefer Flexible Data Structures for collections*
+
+Examples of collection data structures:
+- Vector :: A flexble-size Array. Prefer ~java.util.ArrayList~
+- Set :: Unordered collection where duplicates are not allowed.
+- Bag :: Unordered collection where duplicates /are/ allowed.
+- Queue :: first in, first out
+- Stack :: Last in, first out
+- Dictionary :: Tuples of the form =<key, value>= 
+- Linked List :: Mostly an internal implementation detail these days
+- Tree :: Can be quite useful for some problem types
+- HashMap :: A hash-value for each element decides where it is stored, makes searching fast
+* ArrayList
+- Stores a collection of /objects/ 
+- Is called a /generic class/ 
+  - it can be instantiated with any type of objecs
+  - uses the /diamond notation/ ~<classname>~
+  - once instantiated, it can only store elements of the type ~<classname>~
+
+#+begin_src java
+  import java.util.ArrayList;
+
+  ArrayList<String> myList = new ArrayList<>(); // Element Type is inferred from the variable.
+  myList.add("Hello");
+  myList.add(new String("World"));
+  System.out.println(myList);
+
+  // Built-in Datatypes do not work
+  // ArrayList<int> myIntList = new ArrayList<int>();
+  ArrayList<Integer> myIntList = new ArrayList<>();
+  myIntList.add(Integer.valueOf(42));
+  myIntList.add(12); // 12 can be "upgraded" to an instance of the Integer class
+  System.out.println(myIntList);
+  System.out.println(myIntList.get(0) instanceof Integer);
+#+end_src
+
+#+RESULTS:
+: [Hello, World]
+: [42, 12]
+: true
+* Java Standard Library
+- https://docs.oracle.com/en/java/javase/20/docs/api/index.html
+- Organised into a set of /Modules/ and /Packages/
+  - You will use the =java.base= most of the time.
+  - https://docs.oracle.com/en/java/javase/20/docs/api/java.base/module-summary.html
+
+- Example; the page for the ~ArrayList<>~ class:
+  - https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/util/ArrayList.html
+  - Class Overview
+  - "See Also" (Similar classes, maybe you prefer to use one of these instead?)
+  - Summary and details for
+    - Fields (attributes)
+    - Constructors
+    - Methods
+* ArrayList in Action
+#+begin_src java :tangle Customer.java
+  import java.util.ArrayList;
+
+  public class Customer {
+    private ArrayList<Ticket> myTickets; 
+
+    public Customer() {
+      myTickets = new ArrayList<>(); 
+    }
+
+    public void addTicket(Ticket theTicket) {
+      myTickets.add(theTicket); // Note that we no longer need a dedicated variable for theTicket
+    }
+
+    public int countTickets() {
+      return myTickets.size();
+    }
+
+    public ArrayList<Ticket> getTickets() { // CAREFUL HERE
+      return myTickets;                     // This is *not* a good idea to return
+    }                                       // your internal and private attributes
+
+    public void describeTicket(int ticketNumber) {
+      if (0 <= ticketNumber   // We start at index 0
+          && myTickets.size() > ticketNumber) { // size() is just outside of the collection.
+        String details = myTickets.get(ticketNumber).toString();
+        System.out.println(details);
+      }
+    }
+  }
+#+end_src
+
+#+begin_src java :tangle Ticket.java
+  public class Ticket {
+    private String movieName;
+    private String showTime;
+
+    public Ticket() {
+      this("-- not specified -- ", "-- not specified --");
+    }
+
+    public Ticket(String theName, String theTime) {
+      movieName = theName;
+      showTime = theTime;
+    }
+
+    public String toString() {
+      return "Ticket for " + movieName + " at " + showTime;
+    }
+  }
+
+#+end_src
+
+#+begin_src java :tangle Start.java
+  public class Start {
+    public static void main(String [] args) {
+      Customer c = new Customer();
+      Ticket t = new Ticket("Spartacus", "19:00 tonight");
+
+      c.addTicket(t);
+      c.addTicket(new Ticket("Ben Hur", "15:00 this afternoon"));
+
+      System.out.println(c.countTickets());
+      c.describeTicket(0);
+      c.describeTicket(1);
+      c.describeTicket(3); // Will not print anything, since 3 is currently out of bounds. 
+    }
+  }
+#+end_src
+
+#+RESULTS:
+: 2
+: Ticket for Spartacus at 19:00 tonight
+: Ticket for Ben Hur at 15:00 this afternoon
+
+* A Look at the Objects and Classes
+#+begin_src plantuml :file OD-TicketCollection.png
+object "c:Customer" as c
+object ":Ticket" as t1 {
+movieName = "Spartacus"
+showTime = "19:00 tonight"
+}
+object ":Ticket" as t2 {
+movieName = "Ben Hur"
+showTime = "15:00 this afternoon"
+}
+object ":ArrayList<Ticket>" as tl
+
+c - tl : myTickets >
+tl -- t1
+tl -- t2
+
+class Customer
+class Ticket {
+-String movieName
+-String movieTime
+}
+Customer - "*" Ticket : myTickets >
+#+end_src
+
+#+RESULTS:
+[[file:OD-TicketCollection.png]]
+
+- Design Principle: /Separation of Concerns/
+- Customer does not know how many Tickets it has
+- Customer does not know the details of any Tickets
+
+* Index number in Collection
+- Elements in an ArrayList range from =[0 \dots size()-1]= 
+- When accessing an element, /check/ that the index is within this range.
+- Adding or removing an element in the middle reorders every element after.
+- Accessing elements by index /may/ be useful
+  - Personally, I prefer not to if I can avoid it.
+
+#+begin_src java
+  if (0 <= ticketNumber   // We start at index 0
+      && myTickets.size() > ticketNumber) { // size() is just outside of the collection.
+    String details = myTickets.get(ticketNumber).toString();
+    System.out.println(details);
+  }
+#+end_src
+* Traversing a Collection: for-each
+#+begin_src java
+  Customer c = new Customer();
+  c.addTicket(new Ticket("Spartacus", "19:00 tonight"));
+  c.addTicket(new Ticket("Ben Hur", "15:00 this afternoon"));
+
+  for (Ticket t : c.getTickets()) { // For each element t of the type Ticket in collection c.getTickets()
+    System.out.println(t.toString());
+  }
+#+end_src
+
+#+RESULTS:
+: Ticket for Spartacus at 19:00 tonight
+: Ticket for Ben Hur at 15:00 this afternoon
+
+- This was the reason for the method ~Customer.getTickets()~, and it is a bad reason
+- The rest of the world does not need to know /how/ Customer stores its tickets.
+- Only the Customer class should operate on a customer's Tickets.
+- Design Principle: /Low Coupling/
+  - The lesser I know, the more loosely connected we are
+- Design Principle: /High Cohesion/
+  - Each class has sole responsibility for its own data.
+* Filtering a Collection
+#+begin_src java
+  Customer c = new Customer();
+  c.addTicket(new Ticket("Spartacus", "19:00 tonight"));
+  c.addTicket(new Ticket("Ben Hur", "15:00 this afternoon"));
+
+  for (Ticket t : c.getTickets()) {
+    if (t.getName().contains("tonight")) {
+      System.out.println(t.toString());
+    }
+  }
+#+end_src
+
+- Filtering collections is /extremely/ useful
+- In functional programming, it is usually the starting point of nearly /everything/:
+  1. Given a collection
+  2. Filter to remove everything not relevant
+  3. Do something with the remaining elements
+  4. (maybe) repeat steps 2 and 3
+  5. Translate whatever remains to the format you want
+  6. \dots
+  7. Success!
+- Many languages have built-in support for this.
+- Later versions of Java support it with the =Streams= API (which we will not cover in this course).
+* Other forms of Iteration: while
+#+begin_src java
+  int x = 5;
+
+  while (0 <= x) {
+    System.out.print(" " + x);
+    x--; // If you forget this line, x will never update and the while loop will continue forever.
+  }
+
+  System.out.println();
+  System.out.println("x = "+x);
+#+end_src
+
+#+RESULTS:
+:  5 4 3 2 1 0
+: x=-1
+
+- Repeat while some condition tests to ~true~
+- Can go on forever, if you are not careful
+- Often used if you do not know when to end, e.g.
+  - /while (user has not exited the menu)/
+  - /while (there are more elements in the database)/
+  - /while (there are more lines in this file)/
+  - /while (I still have not found a movie that shows tonight)/
+- Boolean expression can be arbitrarily complex:
+  ~while (index < myTickets.size() && !found && !userAborted)~
+* While without index
+#+begin_src java
+  int f0=0;
+  int f1=1;
+  int fn=f1 + f0; // Fibonacci Sequence
+
+  while (fn < 100) {
+    System.out.print(" " + fn);
+    f0 = f1;
+    f1 = fn;
+    fn = f1 + f0;
+  }
+#+end_src
+
+#+RESULTS:
+:  1 2 3 5 8 13 21 34 55 89
+* Iterators
+#+begin_src java
+  import java.util.ArrayList;
+  import java.util.Iterator;
+
+  Iterator<Ticket> it = myTickets.iterator(); // Get an iterator for the myTickets collection
+  while (it.hasNext()) {
+    Ticket t = it.next();
+    t.getDetails();
+  }
+#+end_src
+
+- Goes hand in hand with a collection
+- We /could/ linger at a particularly troublesome element before calling ~it.next()~
+  - \dots this rarely happens in practice, though.
+- I suspect that ~for-each~ uses Iterators internally
+- We are not allowed to remove elements in a ~for-each~, but we can if we use the Iterator.
+  - ~it.remove()~ \leftarrow can only remove the /current/ element.
+
+* Arrays
+#+begin_src java
+  int[] someNumbers = new int[5];
+  someNumbers[0] = 42;
+  someNumbers[3] = 12;
+
+  for(int num : someNumbers) {
+    System.out.print(" " + num);
+  }
+
+
+  System.out.println();
+  int [] otherNumbers = {23, 31, 57};
+  System.out.println(otherNumbers.length); // Note -- length is an attribute and not a method
+#+end_src
+
+#+RESULTS:
+:  42 0 0 12 0
+: 3
+
+- Arrays are built-in and can operate on any type.
+- Arrays are /fixed size/, extending or shrinking has to be implemented by yourself
+- Inserting and removing elements has to be implemented by yourself
+- /May/ have better performance than e.g. ArrayList
+* Deeper into Array Creation
+#+begin_src java
+  int [] someNumbers;
+  someNumbers = new int[5];
+#+end_src
+
+#+begin_src ditaa :file OD-array1.png                                         
+  +----------+             +---------------+
+  |          |------------>|               | [0]
+  +----------+             +---------------+
+  SomeNumbers              |               | [1]
+                           +---------------+
+                           |               | [2]
+                           +---------------+
+                           |               | [3]
+                           +---------------+
+                           |               | [4]
+                           +---------------+
+#+end_src
+
+#+RESULTS:
+[[file:OD-array1.png]]
+
+- ~int[] someNumbers~ creates a variable that holds a reference to an array
+- ~new int[5]~ allocates /consecutive/ space for 5 integers.
+* Array of Objects
+- What happens if we allocate an array of e.g. Tickets: 
+  - ~Ticket[] myTickets~
+  - ~myTickets = new Ticket[5]~
+
+- What is the output of:
+
+#+begin_src java
+  Ticket [] myTickets = new Ticket[5];
+
+  for(Ticket t : myTickets) {
+    System.out.println(t.toString());
+  }
+#+end_src
+** Objects and Object References
+#+begin_src ditaa :file OD-array2.png                                         
+  +----------+             +---------------+            +---------------------+
+  |          |------------>|               | [0] ------>| movieName, showTime |
+  +----------+             +---------------+            +---------------------+      
+  myTickets                |      null     | [1]                             
+                           +---------------+                                 
+                           |               | [2] ---------         +---------------------+
+                           +---------------+              \------->| movieName, showTime |
+                           |      null     | [3]                   +---------------------+
+                           +---------------+                                 
+                           |               | [4] ------      +---------------------+
+                           +---------------+           \---->| movieName, showTime |
+                                                             +---------------------+
+#+end_src
+
+#+RESULTS:
+[[file:OD-array2.png]]
+* Yet another iteration: for
+#+begin_src java
+  for (int i = 0; i < 10; i++) {
+    System.out.print(" " + i);
+  }
+
+#+end_src
+
+- ~for (/<initialisation>/ ; /<condition>/ ; /<increment>/) { /<statements>/ }~
+- Difference to for-each is that we can use the iterator (e.g. ~i~ above) inside the loop
+- Does not have to look like above, initialisation, condition, and increment can be quite different:
+
+#+begin_src java
+  for (Query q=new Query("Select * from Users") ; q.hasMoreElements(); q.nextElement() ) {
+    System.out.println(q.currentElement());
+  }
+
+  for (Iterator<Ticket> it = myTickets.iterator() ; it.hasNext() ; /* empty incrment */ ) {
+    Ticket t = it.next();
+    // ...
+  }
+#+end_src
+
+-Compare to the while loop:
+
+#+begin_verse
+/<initialisation>/;
+while (/<condition>/) {
+  /<statements>/
+  /<increment>/
+}
+#+end_verse
+
+* Two-dimensional arrays
+#+begin_src ditaa :file TicTacToe.png
+  +---+---+---+
+  |   |   |   |
+  +---+---+---+
+  |   | X |   |
+  +---+---+---+
+  | O |   |   |
+  +---+---+---+
+#+end_src
+
+#+RESULTS:
+[[file:TicTacToe.png]]
+
+- Example /Tic-Tac-Toe/
+- Can be seen as an /array of arrays/: ~board[row][column]~ , or ~(board[row])[column]~
+- Whether to put /rows/ or /columns/ first depends:
+  - Number of rows vs number of columns
+  - Read and write behaviour
+    - mostly along a column, or
+    - mostly along a row
+
+#+begin_src ditaa :file TicTacToe2.png
+  board[]:
+  +---+---+---+
+  |   |   |   |
+  +---+---+---+
+    |   |   |
+    |   |   +---------------------+
+    |   +----------+              |
+    |              |              |
+    |              |              |
+    v              v              v
+
+   board[0]       board[1]       board[2]
+  +---+---+---+  +---+---+---+  +---+---+---+
+  |   |   |   |  |   | X |   |  | O |   |   |
+  +---+---+---+  +---+---+---+  +---+---+---+
+    |   |   |
+    |   |   +-> board[0][2]
+    |   +----> board[0][1]
+    +-------> board[0][0]
+#+end_src
+
+#+RESULTS:
+[[file:TicTacToe2.png]]
+  
+#+begin_src java
+  char board[][] = new char[3][3];
+  board[1][1] = 'X';
+  board[2][0] = 'O';
+
+  for (int row = 0; row < board.length; row++) {
+    for (int column = 0; column < board[row].length; column++) {
+      System.out.print(" " + board[row][column]);
+    }
+    System.out.println();
+  }
+
+  System.out.println("----------");
+
+  for (char[] row : board) {
+    for (char pos : row) {
+        System.out.print(" " + pos);
+    }
+    System.out.println();
+  }
+#+end_src
+
+#+RESULTS:
+:       
+:    X  
+:  O    
+: ----------
+:       
+:    X  
+:  O    
+
+* Again in C++
+** Standard Library, Containers
+- C++ Standard Library: https://en.cppreference.com/w/cpp
+- Part of the /Containers/ library, split into
+  - Sequence Containers
+    - =array= fixed-size wrapper around built-in arrays
+    - =vector= flexible sized array (corresponds to Java ArrayList)
+    - =deque= Double-ended queue
+    - =forward_list= singly-linked list
+    - =list= doubly-linked list
+  - Associative Containers
+    - =set=
+    - =map=
+    - =multiset=
+    - =multimap=
+  - Container Adaptors
+    - =stack=
+    - =queue=
+    - \dots
+** std::vector
+#+begin_src cpp :results output
+  #include <iostream>
+  #include <vector>
+
+  int main(void) {
+    std::vector<int> myIntList; // C++ vector works with built-in datatypes as well as user-defined classes
+    myIntList.push_back(12);
+    myIntList.push_back(42);
+
+    std::cout << myIntList.size() << std::endl
+              << myIntList[0] << " " << myIntList.at(0) << std::endl
+              << myIntList.front() << " " << myIntList.back() << std::endl;
+  }
+#+end_src
+
+#+RESULTS:
+: 2
+: 12 12
+: 12 42
+: 0
+** Vector in action
+*** Class Customer
+#+begin_src c++ :tangle customer.hh
+  #ifndef CUSTOMER_HH
+  #define CUSTOMER_HH
+  #include <vector>
+  #include "ticket.hh"
+
+  class Customer {
+  public:
+    Customer(void) {};
+    void addTicket(Ticket* theTicket);
+    int countTickets();
+    std::vector<Ticket*> getTickets(); // Same caution as before, this exposes your internal structure.
+    void describeTicket(int theTicketNumber);
+  private:
+    std::vector<Ticket*> myTickets;
+  };
+  #endif
+#+end_src
+
+#+begin_src c++ :tangle customer.cc
+  #include <vector>
+  #include <iostream>
+  using namespace std;
+  #include "customer.hh"
+  #include "ticket.hh"
+
+  void Customer::addTicket(Ticket* theTicket) {
+    myTickets.push_back(theTicket);
+  }
+
+  int Customer::countTickets(void) {
+    return myTickets.size();
+  }
+
+  vector<Ticket*> Customer::getTickets() {
+    return myTickets;
+  }
+
+  void Customer::describeTicket(int theTicketNumber) {
+    if (0 <= theTicketNumber && myTickets.size() > theTicketNumber) {
+      cout << myTickets[theTicketNumber]->toString() << endl;
+    }
+  }
+#+end_src
+*** Class Ticket
+#+begin_src c++ :tangle ticket.hh
+  #ifndef TICKET_HH
+  #define TICKET_HH
+  #include <string>
+
+
+  class Ticket {
+  public:
+    Ticket(void) : Ticket("-- not specified -- ", "-- not specified --") {}
+    Ticket(std::string theName, std::string theTime) : movieName(theName),showTime(theTime) {}
+    std::string toString(void) { 
+      return "Ticket for " + movieName + " at " + showTime;
+    }
+  private:
+    std::string movieName;
+    std::string showTime;
+  };
+
+  #endif
+#+end_src
+*** main function
+#+begin_src c++ :tangle start.cc
+  #include <iostream>
+  #include "customer.hh"
+  #include "ticket.hh"
+
+  int main(void) {
+      Customer* c = new Customer();
+      Ticket* t = new Ticket("Spartacus", "19:00 tonight");
+
+      c->addTicket(t);
+      c->addTicket(new Ticket("Ben Hur", "15:00 this afternoon"));
+
+      std::cout << c->countTickets() << std::endl;
+      c->describeTicket(0);
+      c->describeTicket(1);
+      c->describeTicket(3); // Will not print anything, since 3 is currently out of bounds. 
+
+  }
+
+#+end_src
+** Vector as a pointer
+#+begin_src cpp
+  #include <vector>
+  #include <iostream>
+  using namespace std;
+
+  int main(void) {
+    vector<int>* myList = new vector<int>();
+    myList->push_back(12);
+    myList->push_back(42);
+    cout << myList->at(1) << endl;
+    // cout << myList->at(3) << endl; // Will throw a runtime error
+    // cout << myList[1] << endl; // CAUTION this will not work!
+    cout << (*myList)[0] << endl;  // First we need to dereference the pointer (*myList)
+                                   // Then, it can be used as a "normal" variable
+
+    // Why? It has to do with C++ arrays...
+  }
+#+end_src
+** Traversing Collections
+- ~for(:)~ Similar to for-each in Java
+  - There is also a ~for_each~ , but it requires a pointer to a function.
+- ~while~ as in Java
+- ~for~ as in Java
+- C++ Also have =iterators=, but I'm not so sure about their necessity
+
+#+begin_src cpp
+    #include <vector>
+    #include <iostream>
+
+    using namespace std;
+
+    int main(void) {
+      vector<int> myList{3,12,42,44,8,25};
+
+      for(int element : myList) {
+        cout << element << " ";
+      }
+      cout << endl;
+
+      // Can also use the "auto" type, to infer the type for the elements:
+      for(auto element : myList) { cout << element << " "; } 
+      cout << endl;
+
+      int i = 0;
+      while(myList.size() > i) {
+        cout << myList[i] << " ";
+        i++;
+      }
+      cout << endl;
+
+      // for-loop
+      for(int i = 0; i < myList.size(); i++) { cout << myList[i] << " "; }
+      cout << endl;
+
+      // for-loop with an iterator
+      vector<int>::iterator itr;
+      for(itr=myList.begin(); itr!=myList.end(); ++itr) { cout << *itr << " "; }
+      cout << endl;
+  }
+#+end_src
+** Arrays
+- Arrays and pointers are often interchangeable
+- Most of the time we don't know the size of the array during startup
+  - instead, we declare a pointer and allocate an array later on.
+- Weaving back and forth between arrays and pointers is powerful and very useful
+  - it is also dangerous: c++ does not stop you from doing stupid things.
+
+#+begin_src cpp
+  #include <iostream>
+  using namespace std;
+
+  int main(void) {
+    int someSize = 10;
+
+    int anArray[5];                         // Size is given either as a literal...
+    int anotherArray[someSize];             // ...or using another variable
+    long long bit64[] = {10,9,8,7};         // An array given an initial set of values
+    int* initByPointer = new int[someSize]; // declared as a pointer, memory allocated with new
+
+    int* start = anotherArray; // The array is just a pointer with space allocated upon creation
+    *start = 5;                // Write '5' to the position that start is pointing at.
+    cout << anotherArray[0] << *anotherArray 
+         << *start << start[0] << *(&start[0]) << endl;
+
+    start = &anotherArray[0];  // '&' = the address of the 0th position of the anotherArray pointer.
+
+    anotherArray[1] = 12;
+    cout << *(start+1) << *(bit64+1) << endl;  // C++ keeps track of the size of the entities.
+    cout << 1[bit64] << endl; // Just to mess with your heads, this is also valid!
+
+    int valueOfPositon = anotherArray[120];  // No bounds-check, we are reading memory which may be used for something else.
+                                             // Worse, we can also write here!
+
+    // A special case, char* arrays:
+    char aText[] = "abc";
+    char* pos = &aText[2];
+    cout << aText[1] << *pos << aText[3] << endl; // Strings are terminated with \0
+
+    for (char* pos = aText; '\0' != *pos; pos++) { cout << *pos; }
+    cout << endl;
+  }
+#+end_src
+** Deeper into C++ Arrays I
+#+begin_src c++
+  Ticket* myTickets = new Ticket[5];
+#+end_src
+
+- ~myTickets~ is a pointer
+  - ~*myTickets~ == The value of the memory position stored in variable ~myTickets~
+  - ~&myTickets~ == The memory position for the variable ~myTickets~
+  - ~myTickets[1]~ == The value of the first position after the memory position stored in variable ~myTickets~
+
+#+begin_src ditaa :file OD-array3.png                                         
+  +----------+             +---------------------+
+  |          |------------>| movieName, ShowTime | [0]
+  +----------+             +---------------------+
+  myTickets                | movieName, ShowTime | [1]
+                           +---------------------+
+                           | movieName, ShowTime | [2]
+                           +---------------------+
+                           | movieName, ShowTime | [3]
+                           +---------------------+
+                           | movieName, ShowTime | [4]
+                           +---------------------+
+#+end_src
+
+#+RESULTS:
+[[file:OD-array3.png]]
+
+** Deeper into C++ Arrays II
+- More often we want to have an array of pointers to objects
+- More similar to Java
+
+#+begin_src c++ :tangle pointer.cc
+  #include "ticket.hh"
+
+  int main(void) {
+    Ticket** myTickets = new Ticket*[5];
+    myTickets[0] = new Ticket("Spartacus", "tonight");
+    myTickets[2] = new Ticket("Ben Hur", "tomorrow");
+    myTickets[4] = new Ticket("Also Spartacus", "tomorrow");
+
+    myTickets[0]->toString();
+  }
+#+end_src
+
+#+RESULTS:
+
+As before:
+- ~myTickets~ is a pointer
+  - ~myTickets[0]~ == The value of the memory position stored in variable ~myTickets~
+    - Which is /also/ a pointer
+    - ~*myTickets[0]~ == The value of the memory position in the memory position stored in the variable ~myTickets~
+
+#+begin_src ditaa :file OD-array4.png                                         
+  +----------+             +---------------+            +---------------------+
+  |          |------------>|               | [0] ------>| movieName, showTime |
+  +----------+             +---------------+            +---------------------+      
+  myTickets                |      null     | [1]                             
+                           +---------------+                                 
+                           |               | [2] ---------         +---------------------+
+                           +---------------+              \------->| movieName, showTime |
+                           |      null     | [3]                   +---------------------+
+                           +---------------+                                 
+                           |               | [4] ------      +---------------------+
+                           +---------------+           \---->| movieName, showTime |
+                                                             +---------------------+
+#+end_src
+
+#+RESULTS:
+[[file:OD-array4.png]]
+
+** Two-dimensional Arrays
+#+begin_src cpp
+  #include <iostream>
+  using namespace std;
+
+  int main(void) {
+    // char board[3][3]; // This would also work, but less fun for me
+
+    char** board = new char*[3]; // An array of pointers
+
+    // Must initialise with a meaningful value, otherwise it will be full of
+    // whatever junk was lying in those memory addresses before.
+
+    for (int row=0; row<3; row++) {
+      board[row] = new char[3];  // The first thing we must do is to create a new array to represent that one row.
+      for (int col=0; col<3; col++) { 
+        board[row][col] = '-';   // Then we can fill this second array with good values.
+      }
+    }
+
+    // Now we have initialised all the memory, and can reference it just like before:
+    board[1][1] = 'X';
+    board[2][0] = 'O';
+
+    for (int row=0; row<3; row++) {
+      for (int col=0; col<3; col++) { 
+        cout << board[row][col];
+      }
+      cout << endl;
+    }
+  }
+
+#+end_src
+
+#+RESULTS:
+| --- |
+| -X- |
+| O-- |
+* Summary
+- Design Principle: /Separation of Concerns/
+- Design Principle: /Low Coupling/
+- Design Principle: /High Cohesion/
+
+- Standard Library
+  - https://docs.oracle.com/en/java/javase/20/docs/api/index.html
+  - https://en.cppreference.com/w/cpp
+
+- ~java.util.ArrayList~
+- ~std::vector~
+- Array[]
+- Conditionals and Loops
+  - if
+  - while
+  - for
+  - for-each ~for(:)~
+- C++ Pointers again
+
+- Collections are /extremely important/ in order to hold and manage a set of objects of the same type
