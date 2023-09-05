@@ -354,3 +354,11 @@ BufferedReader : +void reset()
 - Yes, ~BufferedReader~ is an extension of ~Reader~
   - that adds a few methods such as ~readLine()~
   - we will introduce Inheritance soon.
+* Summary
+- Objects in the Real World
+- Classes in a program
+- What is a Class, What is an Attribute?
+- Class Diagram
+- Defining Responsibilities for a Class
+- Design Principle: /High Cohesion/
+- Design Patterns
