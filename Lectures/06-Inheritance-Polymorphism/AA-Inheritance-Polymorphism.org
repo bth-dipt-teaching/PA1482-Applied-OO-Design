@@ -1,0 +1,541 @@
+#+Title: Inheritance and Polymorphism
+#+Author: Mikael Svahnberg
+#+Email: Mikael.Svahnberg@bth.se
+#+Date: 2023-09-05
+#+EPRESENT_FRAME_LEVEL: 1
+#+OPTIONS: email:t <:t todo:t f:t ':t H:2
+#+STARTUP: beamer
+
+#+LATEX_CLASS_OPTIONS: [10pt,t,a4paper]
+#+BEAMER_THEME: BTH_msv
+
+
+* Introduction
+- Barnes & Kölling Chapter 8, Designing Classes
+
+- Design Principle: /Low Coupling/
+- Design Principle: /Encapsulation/
+
+- Inheritance
+- Polymorphism
+- Multiple Inheritance
+  - ~extends~ vs ~implements~
+  - abstract classes
+* Objects with Similar but Differing Behaviour
+#+begin_src plantuml :file CD-Inheritance.png
+class Ticket {
+-String myMovieName
+-Time myShowTime
+-int myPrice
++calculatePrice(String ticketType)
+}
+#+end_src
+
+#+RESULTS:
+[[file:CD-Inheritance.png]]
+
+- The ~calculatePrice()~ sets ~myPrice~ of each object
+- All objects still behave in the same way, and have the same attributes
+- No need for different types of tickets. Yet.
+- What if we start to have different behaviour? Different attributes?
+- We could write massive ~if-then-else-if~ statements, as below
+  - This adds clutter for every behaviour that differs.
+  - Breaks the principle of /High Cohesion/
+    - Ticket now has the responsibility of being all types of tickets.
+
+#+begin_src cpp
+  enum TicketType {Normal, Student, Pensioner, Child};
+
+  int Ticket::findBestSeat(TicketType theType) {
+    switch(theType) {
+    case Student: return this->findBestSeatStudent(); break;
+    case Pensioner: return this->findBestSeatPensioner(); break;
+    case Child: return this->findBestSeatChild(); break;
+    case Normal: 
+    default: 
+      return this->findBestSeatNormal(); 
+      break;      
+    }
+  }
+#+end_src
+* A brief excursion: Switch-case
+- Introducing another way to write an ~if-then-else-if~... -chain
+- ~switch (some variable) {~
+- ~case X:~ One case statement for each case. Only concrete cases, no ranges or boolean expressions.
+  - ... code as normal
+  - ~break;~ MUST have this, otherwise it will just keep executing
+- ~default:~ SHOULD have a default statement, executed if no other case matches.
+
+#+begin_src java
+  int someVar=0;
+  switch(someVar) {
+  case 0:
+    System.out.println("Zero");
+    break;
+  case 1:
+    System.out.println("One");
+    break;
+  default:
+    System.out.println("I can't count that far!");
+    break;    
+  }
+#+end_src
+* Differing Behaviour \rightarrow Different Classes
+#+begin_src plantuml :file CD-Inheritance2.png
+class NormalTicket {
+-String myMovieName
+-Time myShowTime
+-int myPrice
++calculatePrice()
++findBestSeat()
+}
+
+class StudentTicket {
+-String myMovieName
+-Time myShowTime
+-int myPrice
++calculatePrice()
++findBestSeat()
+}
+
+class PensionerTicket {
+-String myMovieName
+-Time myShowTime
+-int myPrice
++calculatePrice()
++findBestSeat()
+}
+
+class ChildTicket {
+-String myMovieName
+-Time myShowTime
+-int myPrice
++calculatePrice()
++findBestSeat()
+}
+#+end_src
+
+#+RESULTS:
+[[file:CD-Inheritance2.png]]
+
+- Each class knows how to ~calculatePrice()~ and ~findBestSeat()~ for that type of object.
+- Design Principle /High Cohesion/ and Design Principle /Encapsulation/
+  - Each class /encapsulates/ the unique behaviour
+  - Each class has a single well defined responsibility
+  - Each type of Ticket class is not aware of any other types of Tickets.
+- How do we manage a collection of tickets?
+  - One collection for each type of ticket?
+  - One collection with all types of tickets? How would we do that in Java?
+* Collections of Differing Objects
+- Perhaps a collection of collections?
+
+#+begin_src java
+  import java.util.ArayList;
+
+  ArrayList<> myNormalTickets = new ArrayList<NormalTicket>();
+  ArrayList<> myStudentTickets = new ArrayList<StudentTicket>();
+  ArrayList<> myPensionersTickets = new ArrayList<PensionerTicket>();
+  ArrayList<> myChildrenTickets = new ArrayList<ChildTicket>();
+
+  ArrayList<> myTickets = new ArrayList<ArrayList<>>(); // Not entirely sure about the syntax here...
+  myTickets.add(myNormalTickets);
+  myTickets.add(myStudentTickets);
+  myTickets.add(myPensionersTickets);
+  myTickets.add(myChildrenlTickets);
+
+  // Does your head hurt yet? Mine does.
+  // This is obviously a bad idea.
+#+end_src
+* Trust the Compiler: Inheritance
+#+begin_src plantuml :file CD-Inheritance3.png
+class Ticket {
+-String myMovieName
+-Time myShowTime
+-int myPrice
++calculatePrice()
++findBestSeat()
+}
+
+class NormalTicket {
++calculatePrice()
++findBestSeat()
+}
+
+class StudentTicket {
++calculatePrice()
++findBestSeat()
+}
+
+class PensionerTicket {
++calculatePrice()
++findBestSeat()
+}
+
+class ChildTicket {
++calculatePrice()
++findBestSeat()
+}
+
+
+Ticket <|-- NormalTicket
+Ticket <|-- StudentTicket
+Ticket <|-- PensionerTicket
+Ticket <|-- ChildTicket
+#+end_src
+
+#+RESULTS:
+[[file:CD-Inheritance3.png]]
+
+#+begin_src java
+  ArrayList<Ticket> myTickets = new ArrayList<>();
+  myTickets.add(new NormalTicket());
+  myTickets.add(new StudentTicket());
+  myTickets.add(new PensionerTicket());
+  myTickets.add(new ChildTicket());
+
+  for(Ticket t : myTickets) { t.calculatePrice(); }
+  for(Ticket t : myTickets) { t.findBestSeat(); }
+#+end_src
+
+- The compiler knows the type of each object.
+- The compiler selects the right method implementation for ~calculatePrice()~ and ~findBestSeat()~.
+- /We/ have told the compiler that objects of
+  the classes ~NormalTicket~, ~StudentTicket~, ~PensionerTicket~, and ~ChildTicket~ 
+  can be treated the same as the class ~Ticket~, except when they implement
+  their own unique behaviour for some method or attribute.
+- For this to work, the method must /also/ be declared in the "super class".  
+
+- /Polymorphism/ is an /extremely important/ feature of object oriented programming
+  - Poly Morphos \approx Many Forms
+  - Same method signature, many different implementations.
+* Inheritance in Java: Extends
+#+begin_src java :file StudentTicket
+  public class StudentTicket extends Ticket {
+    public StudentTicket() {
+      super("no student movie", "no time"); // Calling the constructor of the super class
+    }
+
+    public int findBestSeat() {
+      // Perhaps get a starting position from the super class
+      // Using the reference "super" to get to the original findBestSeat() method
+      // Otherwise I would just recursively call myself...
+      int seat = super.findBestSeat();
+
+      // Then do some Student-specific magic to get the
+      // best seat for them...
+      mySeat = 10; // Do not need to use "super" here. Sub-classes inherit all methods and attributes.
+      return this.mySeat; // But I can use the this reference if I need to clarify
+    }    
+  }
+#+end_src
+
+** Usage
+#+begin_src java :file Start
+  import java.util.ArrayList;
+  public class Start {
+    public static void main(String [] args) {
+      ArrayList<Ticket> tick = new ArrayList<>();
+      tick.add(new Ticket());
+      tick.add(new StudentTicket());
+
+      for(Ticket t : tick) { System.out.println(t.findBestSeat()); }
+      // Note that at this point I no longer know or care
+      // about which sub-type each object has.
+      // I only need to treat them as Tickets, and the compiler
+      // will take care of the rest.
+    }
+  }
+#+end_src
+* Inheritance in C++
+- ~class subClass : public superClass~
+- Polymorphic methods must be declared ~virtual~
+- The sub-class method may be specified with ~override~
+  - This double-checks that the original method was indeed declared ~virtual~
+  - ~override~ is not required but good practice.
+- Polymorphism only works with pointers to objects!
+
+#+begin_src c++ :tangle ticket.hh
+#ifndef TICKET_HH
+#define TICKET_HH
+#include <string>
+
+class Ticket {
+public:
+  Ticket(void) : Ticket("-- not specified -- ", "-- not specified --") {}
+  Ticket(std::string theName, std::string theTime) : movieName(theName),showTime(theTime) {}
+	virtual int findBestSeat() { mySeat=0; return mySeat; }
+  std::string toString(void) { 
+    return "Ticket for " + movieName + " at " + showTime + " sitting in seat " + std::to_string(mySeat);
+  }
+protected:
+	int mySeat;
+private:
+  std::string movieName;
+  std::string showTime;
+};
+
+#endif
+#+end_src
+
+#+begin_src c++ :tangle studentticket.hh
+  #ifndef STUDENTTICKET_HH
+  #define STUDENTTICKET_HH
+
+  #include "ticket.hh"
+
+  class StudentTicket : public Ticket {
+  public:
+    StudentTicket(void) : Ticket("no student movie", "no time") {}
+
+    int findBestSeat(void) override { 
+      int seat = Ticket::findBestSeat();
+      mySeat = 10;
+      return this->mySeat;
+    }
+  };
+
+  #endif
+#+end_src
+** Usage
+#+begin_src c++ :tangle start.cc
+  #include <vector>
+  #include <iostream>
+  using namespace std;
+  #include "ticket.hh"
+  #include "studentticket.hh"
+
+  int main(void) {
+    vector<Ticket*> tick;
+    tick.push_back(new Ticket());
+    tick.push_back(new StudentTicket());
+
+    for (auto t : tick) { cout << t->findBestSeat() << endl; }    
+    for (auto t : tick) { cout << t->toString() << endl; }
+  }
+
+#+end_src
+* Public, Protected, Private in a class
+- Methods and Attributes in a class can be declared ~public~, ~private~, or ~protected~
+- ~public~ is accessible everywhere
+- ~private~ and ~protected~ are only accessible from inside the class.
+- ~private~ is not accessible in sub-classes.
+- ~protected~ can be accessed in sub-classes.
+
+Design Principle: /Encapsulation/
+- Keep the internal design of a class hidden
+- Only expose what should be used by others
+* Public, Protected, Private inheritance
+C++ can inherit in three ways:
+- ~public~ \rightarrow everything remains the same. 
+  - ~public~ \rightarrow ~public~
+  - ~protected~ \rightarrow accessible by sub-classes
+  - ~private~ \rightarrow not accessible by sub-classes.
+  - This is the most common case of inheritance
+  - Java only has public inheritance
+- ~protected~ \rightarrow changes accessibility of the base class
+  - ~public~ \rightarrow ~protected~
+  - ~protected~ \rightarrow ~protected~
+  - ~private~ \rightarrow ~private~
+- ~private~ \rightarrow changes accessibility of the base class
+  - ~public~ \rightarrow ~private~
+  - ~protected~ \rightarrow ~private~
+  - ~private~ \rightarrow ~private~
+* Why protected or private inheritance?
+- I may want to /use/ a base-class, but not make it part of my public interface
+  - \rightarrow ~protected~ inheritance
+  - Inheritance for code re-use
+  - Keep public interface clean
+- I may want to use a base-class /and/ not make it available to any sub-classes
+  - \rightarrow ~private~ inheritance
+  - Inheritance for code re-use
+  - Keep internal interface clean, perhaps avoid issues with multiple inheritance.
+  - I want to inherit the /type/, but do not need the behaviour.
+* Multiple Inheritance in C++
+#+begin_src c++
+  class Warrior : public Wizard, public Swordsman {
+  public:
+    Warrior(void);
+    virtual void fight(void) override;
+    // ...
+  protected:
+  private:
+  };
+#+end_src
+
+  - Warrior is now both a Wizard and a Swordsman (with all their methods and attributes)
+  - But what about the ~fight()~ method?
+    - Should we fight like a wizard or a swordsman?
+    - the Warrior class /has/ to make that decision and reimplement the ~fight()~ method.
+
+#+begin_src c++
+  void Warrior::fight(void) {
+    if (is_holding("wand")) { 
+      Wizard::fight(); 
+    } else if (is_holding("sword")) { 
+      Swordsman::fight(); 
+    } else {
+      bravely_run_away();
+    }
+  }
+#+end_src
+* Multiple Inheritance in Java
+- Cannot inherit behaviour
+- Can only inherit declaration; an /interface/
+
+#+begin_src java
+    public interface Wizard {
+      public void fight(); // Only the declaration here.
+    }
+#+end_src
+
+#+begin_src java
+  public class Warrior implements Wizard, Swordsman {
+    public void fight() {
+      // The only implementation of fight() is here.
+      // even if it has been specified in many places.
+    }
+  }
+
+#+end_src
+* Abstract Classes
+- an /abstract class/ is missing at least one method implementation.
+- You can not instantiate objects from an abstract class, you must first sub-class it.
+- In Java you use an abstract class when
+  - You want to encapsulate some common functionality
+  - You want to partially define an API, where sub-classes fill in the details
+- In C++, this is the closest to an ~interface~ that you will get.
+
+#+begin_src java
+  abstract class Player {
+    public abstract void fight();
+
+    public void bravely_run_away() {  // can have some concrete methods and others abstract.
+      System.out.println("You successfylly attack backwards"); 
+    };
+  }
+
+  // ...
+
+  class Wizard extends Player {
+    public void fight() {
+      // Here is the implementation for fight()
+    }
+  }
+#+end_src
+
+#+begin_src c++
+  class Player {
+  public:
+    virtual void fight(void) = 0; // abstract
+    virtual void bravely_run_away(void); // will be implemented in the Player class
+  protected:
+    int myHealth; // Unlike a java interface, we can introduce attributes in an abstract class
+  private:
+  };
+
+  class Wizard : public Player, public Writable {
+  public:
+    virtual void fight(void); // Re-declared here to tell the compiler that we intend to implement the method
+  };
+
+  void Wizard::fight(void) {
+    // implementation for fight()
+  }
+#+end_src
+* Objects and Classes and Interfaces (oh, my!)
+#+begin_src plantuml :file CD-int-abs.png
+object "warren:Warrior" as warren
+warren : myHealth=100
+
+note bottom of warren
+the :Warrior object that the variable warren refers to
+can be used as if it is a Warrior, a Wizard, a Swordsman, or a Player.
+end note
+
+abstract class Player {
++void fight() = 0
++void bravelyRunAway()
+#myHealth
+}
+
+interface Wizard {
++void fight()
++void bravelyRunAway()
++void castSpell()
+}
+
+interface Swordsman {
++void fight()
++void bravelyRunAway()
++void sharpenSword()
+}
+
+class Warrior {
++void fight()
++void castSpell()
++void sharpenSword() 
+}
+
+note left of Warrior::castSpell
+must implement the two methods castSpell() and sharpenSword()
+otherwise Warrior would also be abstract 
+end note
+
+note bottom of Warrior
+bravelyRunAway() is inherited from Player and is sufficient to satisfy the Wizard and Swordsman interfaces.
+end note
+
+Wizard <|-- Warrior
+Swordsman <|-- Warrior
+Player <|-- Warrior
+#+end_src
+
+#+RESULTS:
+[[file:CD-int-abs.png]]
+
+#+begin_src java
+  Warrior warren = new Warrior();
+  warren.fight();
+  warren.castSpell();
+  warren.sharpenSword();
+  warren.bravelyRunAway();
+
+  Wizard willy = new Warrior();
+  willy.castSpell();
+  // willy.sharpenSword(); // NOT ok, the variable willy refers to a Wizard.
+
+  // Player pete = new Player(); // NOT ok, Player is abstract
+  Player aliasToWarren = (Player) warren;
+  // aliasToWarren.castSpell(); // NOT ok, aliasToWarren refers to a Player, which does not know about castSpell()
+  aliasToWarren.fight();
+  System.out.println(aliasToWarren instanceof Wizard); // This is still true, so we can re-cast the object back to a Wizard
+    // We should be careful with re-casting objects
+    // It is better to hold a reference to a sufficiently generic object
+    // and "lift" behaviour upwards in the inheritance hierarchy
+    // so that the same method name can be used but with different implementations
+#+end_src
+
+- Design Principle: /Encapsulation/
+  - By using a variable of the right type, only the interface we currently need is accessible to us
+  - At that point, we are maybe not even aware that the same object may have different roles
+  - E.g. ~ArrayList<Player>~ may be all we want and need.
+* Inheritance Hierarchies
+- Multiple inheritance is useful to describe different roles an object may have
+- More commonly we want to describe many different types of objects that share the same interface
+
+[[file:CD-Inheritance3.png]]
+
+* Summary
+- Design Principle ~High Cohesion~
+- Design Principle ~Encapsulation~
+- Design Principle ~Low Coupling~
+
+- =switch-case=
+- Inheritance
+  - public, protected private inheritance
+  - abstract class
+  - interface
+  - casting an object to a different type
+- Polymorphism
+  - ~virtual~
+- Multiple inheritance vs inheritance hierarchies
