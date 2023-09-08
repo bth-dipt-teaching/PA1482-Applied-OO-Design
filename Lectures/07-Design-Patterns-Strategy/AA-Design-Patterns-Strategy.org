@@ -1,0 +1,393 @@
+#+Title: Design Patterns: Strategy
+#+Author: Mikael Svahnberg
+#+Email: Mikael.Svahnberg@bth.se
+#+Date: 2023-09-07
+#+EPRESENT_FRAME_LEVEL: 1
+#+OPTIONS: email:t <:t todo:t f:t ':t H:2
+#+STARTUP: beamer
+
+#+LATEX_CLASS_OPTIONS: [10pt,t,a4paper]
+#+BEAMER_THEME: BTH_msv
+
+* Introduction
+- (Freeman & Robson, Chapter "intro")
+- Freeman & Robson, Chapter 1: Welcome to Design Patterns
+
+- Design Principle: /Encapsulation/
+- Design Principle: /High Cohesion/
+- Design Principle: /Low Coupling/
+- Design Pattern: /Strategy/
+
+* The Challenge
+- One type may have many pieces of behaviour that differs.
+- If it was only one place, we /could/ get away with ~switch-case~
+- But then we have ~findBestSeat()~, and the next behaviour, and the next\dots
+
+#+begin_src c++
+  enum TicketType {Normal, Student, Pensioner, Child};
+
+  int Ticket::calculatePrice(TicketType theType) {
+    switch(theType) {
+    case Student: return basePrice*0.80; break;
+    case Pensioner: return basePrice*0.50; break;
+    case Child: return basePrice*0.50; break;
+    case Normal: 
+    default: 
+      return basePrice; 
+      break;      
+    }
+  }
+#+end_src
+* The Challenge II
+- Next step, an inheritance hierarchy
+- Overload all methods that differ, implement separate behaviour.
+- What if /some/ ticket types, but not all, share the same behaviour?
+  - Can we "lift" this behaviour to the base class?
+  - Might work if it is only one type of behaviour that is common.
+  - Will not work (in Java), if I end up with multiple inheritance.
+
+#+begin_src plantuml :file CD-Inheritance3.png
+class Ticket {
+-String myMovieName
+-Time myShowTime
+-int myPrice
++calculatePrice()
++findBestSeat()
+}
+
+class NormalTicket {
++calculatePrice()
++findBestSeat()
+}
+
+class StudentTicket {
++calculatePrice()
++findBestSeat()
+}
+
+class PensionerTicket {
++calculatePrice()
++findBestSeat()
+}
+
+class ChildTicket {
++calculatePrice()
++findBestSeat()
+}
+
+
+Ticket <|-- NormalTicket
+Ticket <|-- StudentTicket
+Ticket <|-- PensionerTicket
+Ticket <|-- ChildTicket
+#+end_src
+
+#+RESULTS:
+[[file:CD-Inheritance3.png]]
+
+* High Cohesion and Encapsulation to the rescue!
+- Separate similar behaviour to a new class:
+  - it will know all there is to know about that particular behaviour.
+  - it will /encapsulate/ this behaviour
+  - it can be modified and extended separately from the rest of the application.
+
+#+begin_quote
+Identify the aspects of your
+application that vary and separate
+them from what stays the same.
+#+end_quote
+
+- /Encapsulate/ the behaviour that varies and hide it from others.
+  - Only expose a common API that can be used on all types of behaviour.
+* Separate the changing behaviour
+#+begin_src plantuml :file CD-Separate.png
+class Ticket {
++Ticket(TicketType theTicketType)
+-String myMovieName
+-Time myShowTime
+-int myPrice
++calculatePrice()
++findBestSeat()
+}
+
+note left of Ticket::findBestSeat()
+Ticket::findBestSeat() {
+  return mySeatBehaviour->findBestSeat();
+}
+end note
+
+interface SeatFinder {
++findBestSeat()
+}
+
+Ticket -- SeatFinder : mySeatBehaviour >
+SeatFinder <|-- NormalSeatFinder
+SeatFinder <|-- PensionerSeatFinder
+SeatFinder <|-- ChildSeatFinder
+
+note left of SeatFinder
+Students can be seated as normal people
+so no extra class for them.
+end note
+
+note top of NormalSeatFinder
+Since we implement the SeatFinder interface
+and NormalSeatFinder is not declared abstract, it can be inferred
+that all methods from SeatFinder is indeed
+implemented. We can thus be lazy and not
+write them out here.
+end note
+#+end_src
+
+#+RESULTS:
+[[file:CD-Separate.png]]
+* Summary: Strategy Pattern
+- This was a very simple case, with only one method
+- Likely, we have several methods that are all part of the same type of behaviour.
+
+- Only one =findBestSeat= behaviour is active for one specific ~ticket:Ticket~ at any specific point in time.
+  - We call this a /strategy/, in this case a ~SeatFinderStrategy~
+
+- Design Principle: /Program to an Interface, not an implementation/
+  - The Ticket class and the rest of the world mostly only knows about the interface ~SeatFinderStrategy~
+  - The interface is stable and define the methods common for all seat finding strategies.
+  - The actual implementation of this interface, this API, will vary in each sub-class.
+  - The /interface/ defines ~findBestSeat()~ , not ~findSeatCloseToParent()~ or ~findEasyToAccessSeat()~.
+
+- We can do the same for ~calculatePrice()~:
+  - ~interface PriceCalculatorStrategy~ , and sub-classes for each type of price calculation
+- One instance of /Strategy Pattern/ for every type of behaviour that varies.
+* Generic form for Stategy Pattern
+#+begin_src plantuml :file CD-Strategy.png
+
+class Context {
++contextInterface()
++setStrategy(...currentContext)
+'-StrategyInterface* getCurrentStrategy()
+-StrategyInterface* currentStrategy
+}
+
+
+abstract class StrategyInterface <<abstract strategy>> {
+ +method1()
+ +method2()
+ +...()
+ +methodN()
+}
+
+Context -- "1" StrategyInterface
+
+StrategyInterface <|-- ConcreteImplementation1
+StrategyInterface <|-- ConcreteImplementation2
+
+ConcreteImplementation1 : +method1()
+ConcreteImplementation1 : +method2()
+ConcreteImplementation1 : +...()
+ConcreteImplementation1 : +methodN()
+
+ConcreteImplementation2 : +method1()
+ConcreteImplementation2 : +method2()
+ConcreteImplementation2 : +...()
+ConcreteImplementation2 : +methodN()
+
+note left of Context::contextInterface()
+The context interface can have many methods, 
+but internally they make use of calls to
+currentStrategy, e.g. currentStrategy->method1()
+end note
+
+note left of Context::setStrategy(...currentContext)
+Should this method be public?
+Above all, do not allow the outside world to
+create the currentStrategy object !!
+end note
+#+end_src
+
+#+RESULTS:
+[[file:CD-Strategy.png]]
+
+* Inheritance or Composition
+- Assume we would only use inheritance:
+  - As the number of behaviour types grow, we create new sub-classes
+  - As the number of variants of each behaviour type grow, we create new sub-classes
+  - \sum The number of combinations grow exponentially
+
+- The /strategy pattern/ refactors the problem into separate inheritance hierarchies
+  - one inheritance hierarchy for each behaviour type
+  - one class for each strategy, or behaviour variant
+
+- The Context class remains simple
+- The Context class is now in charge of managing all the strategies
+- The rest of the program no longer need to know any of this. We have /encapsulated/ the strategies.
+
+- Design Principle: /Favor composition over inheritance/
+  - a more maintainable design
+  - easier to extend with new behaviour types
+  - easier to extend with new strategies
+* Design Patterns and Pattern Libraries
+- Design patterns are reusable solutions to known problems
+  - With known consequences
+  - "encoded experience"
+  - Codified in a structured format
+  - named
+- There is nothing that /requires/ you to use design patterns; they are a convenience.
+- Design Patterns offer a /shared vocabularly/
+  - When you see "strategy" you know what to look for, and how it works
+* Summary
+- Design Pattern: /Strategy/
+
+- Design Principles: /High Cohesion/ and /Encapsulation/
+  - Separate similar behaviour into a new class.
+  - Encapsulate what varies under a common API.
+
+- Design Principle: /Program to an Interface, not an Implementation/
+  - Program to a supertype, the common API.
+
+- Design Principle: /Composition over Inheritance/
+  - Avoid deep and intricate inheritance hierarchies 
+    where behaviour can not easily be extended or changed.
+
+- Design Principle: /Low Coupling/
+  - The rest of the program do not need to know how to create a specific sub-class
+    with the exact right combination of different behaviour strategies.
+  - Most of the time, the Context class can also forget about which
+    is the current strategy, and only use the common API.
+  - We may not get /fewer/ connections between classes, but they
+    are more /loosely/ coupled.
+* Lost Puppies :noexport:
+** Behaviours among Wizards and Warriors
+- A slightly more complicated case
+- ~Player~ (now a concrete class) contains different ~Behaviours~
+- The behaviours it currently hold defines:
+  1. whether it can fight like a wizard or a swordsman
+  2. how to run away.
+- Two instances of the /Strategy pattern/, one for =Fight= and one for =Flight=
+- We can raise the abstraction, so that /fight/ and /flight/ are both treated as behaviours.
+
+#+begin_src plantuml :file CD-WizWar.png
+class Player {
++fight()
++flight()
+}
+
+interface Behaviour {
++boolean isActive()
++int predictEffect()
++int predictSelfHealth()
++int executeBehaviour()
++int respondToBehaviour(Behaviour theOtherBehaviour)
++string getDescription()
+}
+
+interface FightBehaviour
+interface FlightBehaviour
+
+note left of FightBehaviour : Strictly speaking, this level is not necessary
+
+Player - "*" Behaviour : myBehaviours >
+Behaviour <|-- FightBehaviour
+Behaviour <|-- FlightBehaviour
+FightBehaviour <|-- WizardFightBehaviour
+FightBehaviour <|-- SwordsmanFightBehaviour
+FlightBehaviour <|-- BravelyRunAwayBehaviour
+#+end_src
+
+#+RESULTS:
+[[file:CD-WizWar.png]]
+** Implementation
+*** Player
+#+begin_src java :tangle Player.java
+  import java.util.ArrayList;
+  public class Player {
+    private ArrayList<Behaviour> myBehaviours = new ArrayList<>();
+    private int myHealth = 1000;
+
+    public Player() {};
+
+    public void addBehaviour(String theBehaviour) {
+      switch(theBehaviour) {
+      case "WizardFight": myBehaviours.add(new WizardFightBehaviour()); break;
+      case "SwordsmanFight": myBehaviours.add(new SwordsmanFightBehaviour()); break;
+      case "Flight": myBehaviours.add(new BravelyRunAwayBehaviour()); break;
+      default: throw new Exception("Unknown Behaviour"); break;
+      }
+    }
+
+    public void fight() {
+      Behaviour bestBehaviour = myBehaviours.get(0);
+      int bestHealth = myHealth + bestBehaviour.predictSelfHealth();
+      int bestDamage = bestBehaviour.predictEffect();;
+
+      for (Behaviour b : myBehaviours) {
+        int bHealth = myHealth + b.predictSelfHealth();
+        int bDamage = b.predictEffect();
+        if (bDamage > bestDamage &&
+            bHealth >= bestHealth-100) {
+          bestBehaviour = b;
+        }
+      }
+
+      myHealth += bestBehaviour.executeBehaviour();
+      System.out.println("You " + bestBehaviour.getDescription());
+      System.out.println("Your health is now " + myHealth);
+    }
+  }
+#+end_src
+*** Behaviours
+#+begin_src java :tangle Behaviour.java
+  public interface Behaviour {
+    public boolean isActive();
+    public int predictEffect();
+    public int predictSelfHealth();
+    public int executeBehaviour();
+    public int respondToBehaviour(Behaviour theOtherBehaviour);
+    public String getDescription();
+  }
+#+end_src
+
+#+begin_src java :tangle WizardFightBehaviour.java
+  public class WizardFightBehaviour implements Behaviour {
+    public boolean isActive() { return true; }
+    public int predictEffect() { return 100; }
+    public int predictSelfHealth() { return -50; }
+    public int executeBehaviour() { return -50; } 
+    public int respondToBehaviour(Behaviour theOtherBehaviour) { return 0; }
+    public String getDescription() { return "valiantly wield your wand!"; }
+  }
+
+#+end_src
+
+#+begin_src java :tangle SwordsmanFightBehaviour.java
+  public class SwordsmanFightBehaviour implements Behaviour {
+    public boolean isActive() { return true; }
+    public int predictEffect() { return 200; }
+    public int predictSelfHealth() { return -10; }
+    public int executeBehaviour() { return -10; } 
+    public int respondToBehaviour(Behaviour theOtherBehaviour) { return 10; }
+    public String getDescription() { return "skillfully slash your sword!"; }
+  }
+#+end_src
+
+#+begin_src java :tangle BravelyRunAwayBehaviour.java
+  public class BravelyRunAwayFightBehaviour implements Behaviour {
+    public boolean isActive() { return true; }
+    public int predictEffect() { return 0; }
+    public int predictSelfHealth() { return 0; }
+    public int executeBehaviour() { return 0; } 
+    public int respondToBehaviour(Behaviour theOtherBehaviour) { return 0; }
+    public String getDescription() { return "bravely run away..."; }
+  }
+#+end_src
+*** Start
+#+begin_src java :tangle Start.java
+  public class Start {
+    public static void main(String [] args) {
+      Player p = new Player();
+      p.addBehaviour("Flight");
+      p.addBehaviour("WizardFight");
+      p.fight();
+    }
+  }
+
+#+end_src
+** Summary: Entity Component Pattern
