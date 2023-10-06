@@ -1,0 +1,4 @@
+You have already seen the output stream operator in action
+some
+more
+text
