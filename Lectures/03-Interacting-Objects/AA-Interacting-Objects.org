@@ -659,3 +659,10 @@ main[1]
   - Each object has full control over this responsibility
 - Design Principle: /Encapsulation/
   - Only expose what is necessary to others; the public interface.
+* Next Lecture: Designing Applications
+- Barnes & Kölling Chapter 15, Designing Applications
+
+- Object Oriented Analysis and Design
+- UML (Unified Modelling Language) / RUP
+- Discovering Classes
+- Designing Interfaces

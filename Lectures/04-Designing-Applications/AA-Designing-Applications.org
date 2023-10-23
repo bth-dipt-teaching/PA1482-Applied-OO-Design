@@ -362,3 +362,17 @@ BufferedReader : +void reset()
 - Defining Responsibilities for a Class
 - Design Principle: /High Cohesion/
 - Design Patterns
+* Next Lecture: Collections of Objects
+- Barnes & Kölling Chapter 4, Grouping Objects
+- Barnes & Kölling Chapter 7, Fixed-Size Collections -- Arrays
+
+- Collections of Objects
+  - ArrayList
+  - Array
+- Iteration
+  - Iterators
+  - for-each
+  - ~while~
+  - ~for~
+- Java Standard Library
+- C++ Standard Libraries

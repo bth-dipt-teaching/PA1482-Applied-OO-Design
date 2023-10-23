@@ -488,6 +488,17 @@ clean:
 - In an IDE, much of this is hidden.
 
 - Read the error messages!
+* Next Lecture: Programming Fundamentals
+- Barnes & Kölling Chapter 1, Objects and Classes
+- Barnes & Kölling Chapter 2, Understanding Class Definitions
+
+- Objects, Classes, Methods, and Attributes
+- Built in data types
+- Fundamental Input and Output
+- Conditional Execution: ~if~
+
+- Design Philosophy: /Program objects represent real world entities/
+- Design Principle: /Low Coupling/
 * Lost Puppies :noexport:
 ** Objects using other Objects
 - We have already introduced one example: /compound data types may consist of other compound data types/

@@ -9,7 +9,7 @@
 #+LATEX_CLASS_OPTIONS: [10pt,t,a4paper]
 #+BEAMER_THEME: BTH_msv
 
-* TODO Introduction
+* Introduction
 - Freeman & Robson, Chapter 4: The Factory Pattern
 - Freeman & Robson, Chapter 7: The Adapter and Facade Pattern
 - Freeman & Robson, Chapter 9: The Iterator and Composite Pattern

@@ -876,3 +876,14 @@ As before:
 - C++ Pointers again
 
 - Collections are /extremely important/ in order to hold and manage a set of objects of the same type
+* Next Lecture: Inheritance and Polymorphism
+- Barnes & Kölling Chapter 8, Designing Classes
+
+- Design Principle: /Low Coupling/
+- Design Principle: /Encapsulation/
+
+- Inheritance
+- Polymorphism
+- Multiple Inheritance
+  - ~extends~ vs ~implements~
+  - abstract classes

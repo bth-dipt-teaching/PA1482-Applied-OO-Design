@@ -895,3 +895,14 @@ Also: |, ||, |=
 - Implementation Principle: /Avoid magic numbers/
   - ~const~
   - ~static final~
+* Next Lecture: Exceptions and File IO
+- Barnes & Kölling Chapter 9: Well Behaved Objects
+- Barnes & Kölling Chapter 14: Handling Errors
+- Barnes & Kölling Chapter 14.9: File-Based input/output
+
+- Testing for Runtime Errors
+- Runtime Errors vs Compile time Errors
+- Input Sanitisation
+- Error Reporting vs Error Handling
+- Exception Handling
+- File IO

@@ -510,3 +510,12 @@ out o-- fileout
   - Write the code such that the error is anticipated and handled
 - Reporting errors with return value
 - Reporting errors by throwing an exception
+* Next Lecture: More Design Patterns
+- Freeman & Robson, Chapter 4: The Factory Pattern
+- Freeman & Robson, Chapter 7: The Adapter and Facade Pattern
+- Freeman & Robson, Chapter 9: The Iterator and Composite Pattern
+
+- Design Principle: /Open-Closed Principle/ 
+- Design Principle: /Depend on Abstractions/
+- Design Principle: /Encapsulation/
+- Design Principle: /High Cohesion/

@@ -307,3 +307,14 @@ Each test framework has their own flavour, but a few things are common:
   - are /debugable/
   - have a /single area of responsibility/
   - /encapsulates/ behaviour in easy-to-find and localised places.
+* Next Lecture: Design Patterns: Observer and Decorator
+- Freeman & Robson, Chapter 2: The Observer Pattern
+- Freeman & Robson, Chapter 3: The Decorator Pattern
+
+- Design Principle: /Encapsulation/
+- Design Principle: /High Cohesion/
+- Design Principle: /Low Coupling/
+- Design Principle: /Composition over Inheritance/
+- Design Principle: /Open-Closed Principle/
+- Design Pattern: /Observer/
+- Design Pattern: /Decorator/

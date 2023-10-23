@@ -17,7 +17,6 @@
 - Design Principle: /High Cohesion/
 - Design Principle: /Low Coupling/
 - Design Pattern: /Strategy/
-
 * The Challenge
 - One type may have many pieces of behaviour that differs.
 - If it was only one place, we /could/ get away with ~switch-case~
@@ -254,6 +253,15 @@ end note
     is the current strategy, and only use the common API.
   - We may not get /fewer/ connections between classes, but they
     are more /loosely/ coupled.
+* Next Lecture: Responsibility Driven Design
+- Barnes & Kölling Chapter 8, Designing Classes
+- Barnes & Kölling Chapter 9, Well-Behaved Objects
+- Book tip: Robert C. Martin, /Clean Code/, Pearson Education, 2009.
+- Book tip: Steve McConnell, /Code Complete/, Microsoft Press, 2004.
+
+- Design Principle: /Low Coupling/
+- Design Principle: /Encapsulation/
+- Design Principle: /Localising Change (High Cohesion)/
 * Lost Puppies :noexport:
 ** Behaviours among Wizards and Warriors
 - A slightly more complicated case

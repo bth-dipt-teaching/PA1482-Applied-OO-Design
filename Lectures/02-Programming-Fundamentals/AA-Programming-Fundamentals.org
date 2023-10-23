@@ -629,3 +629,9 @@ Software Program:
 Software Design:
 - Design Principle: /Low Coupling/
   - Private vs Public interface of a class
+* Next Lecture: Interacting Objects
+- Barnes & Kölling Chapter 3, Object Interaction
+
+- Design Principle: /High Cohesion/
+- Design Principle: /Encapsulation/
+- Object Oriented Analysis

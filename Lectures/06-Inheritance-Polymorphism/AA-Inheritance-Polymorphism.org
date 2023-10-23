@@ -539,3 +539,11 @@ Player <|-- Warrior
 - Polymorphism
   - ~virtual~
 - Multiple inheritance vs inheritance hierarchies
+* Next Lecture: Design Patterns: Strategy
+- (Freeman & Robson, Chapter "intro")
+- Freeman & Robson, Chapter 1: Welcome to Design Patterns
+
+- Design Principle: /Encapsulation/
+- Design Principle: /High Cohesion/
+- Design Principle: /Low Coupling/
+- Design Pattern: /Strategy/

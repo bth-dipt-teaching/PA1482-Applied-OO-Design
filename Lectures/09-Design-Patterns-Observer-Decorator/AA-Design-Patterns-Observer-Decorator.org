@@ -594,3 +594,10 @@ Conclusion: *Don't do this*
 Also:
 - Java inner classes
 - UML Sequence Diagrams
+* Next Lecture: Constructors, Destructors, Pointers and References
+- Constructors and Destructors
+- Copy Constructors
+- Pointers and References
+- Identity and Equality
+- Operator Overloading
+- Constants
