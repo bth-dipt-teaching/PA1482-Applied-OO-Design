@@ -1,0 +1,533 @@
+#+Title: More Patterns
+#+Author: Mikael Svahnberg
+#+Email: Mikael.Svahnberg@bth.se
+#+Date: 2023-10-06
+#+EPRESENT_FRAME_LEVEL: 1
+#+OPTIONS: email:t <:t todo:t f:t ':t H:2
+#+STARTUP: beamer
+
+#+LATEX_CLASS_OPTIONS: [10pt,t,a4paper]
+#+BEAMER_THEME: BTH_msv
+
+* TODO Introduction
+- Freeman & Robson, Chapter 4: The Factory Pattern
+- Freeman & Robson, Chapter 7: The Adapter and Facade Pattern
+- Freeman & Robson, Chapter 9: The Iterator and Composite Pattern
+
+- Design Principle: /Open-Closed Principle/ 
+- Design Principle: /Depend on Abstractions/
+- Design Principle: /Encapsulation/
+- Design Principle: /High Cohesion/
+* Referencing vs Creating Objects
+- Somewhere in your code you are going to need to create objects
+- Otherwise, you are not writing an /object/-oriented program
+- ~new~ always expects a concrete class.
+- But you may /store/ it in a reference to an abstract base-class (or ~interface~)
+  - In fact, you /want/ to use a reference to an interface
+  - Referencing a concrete sub-class means we have to /modify/ the code when we /extend/ with a new type.
+
+Design Principle: /Open-Closed Principle/
+- A class should be /open/ for extension
+  - We can add or modify behaviour e.g. through inheritance
+- A class should be /closed/ for modification
+  - modify the code \rightarrow original tests no longer apply
+  - modify the code \rightarrow break other parts of the system
+* Referencing vs Creating Objects
+- In order to /do/ something, we first need to create an object
+
+#+begin_src java
+  public Document generateDocument(String documentType) {
+    Document theDocument;
+
+    if (documentType.equals("Letter")) {
+      theDocument = new LetterDocument();
+    } else if (documentType.equals("Report")) {
+      theDocument = new ReportDocument();
+    } else if (documentType.equals("Protocol")) {
+      theDocument = new ProtocolDocument();      
+    }
+
+    theDocument.applyFormatting();
+    theDocument.setHeaders();
+    theDocument.setFooters();
+    theDocument.insertSectionHeadings();
+    theDocument.insertLoremIpsum();
+
+    return theDocument;
+  }
+#+end_src
+
+- this method does two things:
+  - create an object
+  - generate a document.
+- Breaks the Design Principle: /High Cohesion/
+- Breaks the Design Principle: /Encapsulation/
+- We /do/ (probably) use an ~interface Document~, which is good.
+
+* Factory Method
+- Design Principles: /High Cohesion/ and /Encapsulation/
+  - Separate two tasks into two methods
+  - Encapsulate the creation of objects in a separate method
+  - A new documentType now only cause modification in one place: ~createDocument()~
+  - ~generateDocument()~ becomes
+    - /Open for Extension/ by not being aware of the sub-classes to Document.
+    - /Closed for Modification/ since it is no longer needed.
+
+#+begin_src java
+  public Document createDocument(String documentType) {
+    if (documentType.equals("Letter")) {
+      return new LetterDocument();
+    } else if (documentType.equals("Report")) {
+      return new ReportDocument();
+    } else if (documentType.equals("Protocol")) {
+      return new ProtocolDocument();      
+    } else {
+      return new EmptyDocument();
+    }
+  }
+
+  public Document generateDocument(String documentType) {
+    Document theDocument = createDocument(documentType);
+    theDocument.applyFormatting();
+    theDocument.setHeaders();
+    theDocument.setFooters();
+    theDocument.insertSectionHeadings();
+    theDocument.insertLoremIpsum();
+
+    return theDocument;
+  }
+
+#+end_src
+* Using Different Factory Methods
+- Sometimes, you need to add an extra layer of qualifiers.
+  - For example, let's say that /Students/ documents are different from /Corporate/ documents.
+- We could add an extra parameter to ~createDocument()~
+  - \dots but we would need to add this to ~generateDocument()~ as well.
+  - ~createDocument()~ becomes more complicated
+  - ~createDocument()~ now does two things:
+    - Decide which Document type is requested
+    - Decide whether it is for Students or Corporate.
+  - Add another role, e.g. /Administrators/, and  we need to modify ~createDocument()~.
+- Or, /we can trust the compiler/
+
+#+begin_src plantuml :file CDFactoryMethod.png
+abstract class DocumentManager {
++Document generateDocument(String documentType)
+-Document createDocument(String documentType)=0 {abstract}
+}
+
+DocumentManager <|-- StudentDocumentManager
+DocumentManager <|-- CorporateDocumentManager
+
+StudentDocumentManager : -createDocument(String documentType)
+CorporateDocumentManager : -createDocument(String documentType)
+
+interface Document {
++applyFormatting()
++setHeaders()
++setFooters()
++insertSectionHeadings()
++insertLoremIpsum()
+}
+
+Document <|-- StudentLetterDocument
+Document <|-- StudentReportDocument
+Document <|-- StudentProtocolDocument
+Document <|-- StudentEmptyDocument
+Document <|-- CorporateLetterDocument
+Document <|-- CorporateReportDocument
+Document <|-- CorporateProtocolDocument
+Document <|-- CorporateEmptyDocument
+#+end_src
+
+#+RESULTS:
+[[file:CDFactoryMethod.png]]
+
+- Decide once which type of ~DocumentManager~ we want
+- The concrete document managers (~StudentDocumentManager~ or ~CorporateDocumentManager~ )
+  - Knows how to /create/ documents of the right type
+  - Does not know how to work with the document; this is still done by the ~DocumentManager~
+* Summary of Factory Method
+#+begin_src plantuml :file FactMethSummary.png
+abstract class Creator {
++methodThatUseProduct()
++OtherMethodThatUseProduct()
+-createProduct() = 0 {abstract}
+}
+
+Creator <|-- ConcreteCreator1
+Creator <|-- ConcreteCreator2
+
+ConcreteCreator1 : -createProduct()
+ConcreteCreator2 : -createProduct()
+
+interface Product
+Product <|-- ConcreteProduct1
+Product <|-- ConcreteProduct2
+Product <|-- ConcreteProduct3
+Product <|-- ConcreteProduct4
+#+end_src
+
+#+RESULTS:
+[[file:FactMethSummary.png]]
+
+* Depend on Abstractions
+#+begin_quote
+Depend upon abstractions.
+Do not depend upon concrete classes.
+#+end_quote
+
+- In other words:
+  - Refer to an /interface/ whenever possible
+  - Keep creation of objects in specific easy-to-locate places
+* Factories for Related Choices: Abstract Factory
+- Factory Method to create /one type/ of objects (with a shared base class)
+- Several types \rightarrow several factory methods
+- Breaks Design Principle: /High Cohesion/
+  - The class has two responsibilities:
+    - Whatever it is supposed to be responsible for, e.g. managing documents
+    - Keeping track of many possible object types and which object type that applies in each situation
+  - one single factory method was an ok compromise
+  - several factory methods begin to get messy, and overshadow the real intention of the class.
+
+So.
+
+We delegate.
+
+* Example: Document Elements
+- Different elements: Headings, text, tables, figure captions, etc.
+- Different styles for each role: Student, Corporate, Administrator, etc.
+
+#+begin_src plantuml :file AbsFact1.png
+DocumentManager -- DocumentElementFactory
+
+interface DocumentElementFactory {
++Heading createHeading()
++Text createText()
++Table createTable()
++Caption createCaption()
+}
+
+note right of DocumentElementFactory
+Each method is really a factory method.
+Elements in one document should be created according to the same style.
+end note
+#+end_src
+
+#+RESULTS:
+[[file:AbsFact1.png]]
+
+#+begin_src java
+  public class DocumentManager {
+    private DocumentElementFactory docFactory;
+
+    public void setUserRole(String userRole) {
+      // This is still a factory method
+      // but is only used to create the right factory
+
+      if (userRole.equals("Student")) {
+        docFactory = new StudentDocumentElementFactory();
+      } else if (userRole.equals("Corporate")) {
+        docFactory = new StudentDocumentElementFactory();
+      } /* ... and so on for the rest of the roles */
+    }
+
+
+    public void insertHeading(String contents) {
+      myDocument.insert(docFactory.createHeading(contents));
+    }
+
+    public void insertText(String contents) {
+      myDocument.insert(docFactory.createText(contents)); // Note that we use the same docFactory
+                                                          // so that the text style matches the heading style
+    }
+
+    /* ... and so on for all the other document elements */
+  }
+#+end_src
+
+* Inherit All the Things
+#+begin_src plantuml :file allInheritance.png
+scale 0.7
+DocumentManager -- DocumentElementFactory
+DocumentManager - Document
+
+DocumentElementFactory <|-- StudentDocumentElementFactory
+DocumentElementFactory <|-- CorporateDocumentElementFactory
+DocumentElementFactory <|-- AdministratorDocumentElementFactory
+
+interface Heading
+Heading <|-- StudentHeading
+Heading <|-- CorporateHeading
+Heading <|-- AdministratorHeading
+
+StudentDocumentElementFactory --- StudentHeading : creates >
+CorporateDocumentElementFactory --- CorporateHeading : creates >
+AdministratorDocumentElementFactory --- AdministratorHeading : creates >
+
+interface Text
+Text <|-- StudentText
+Text <|-- CorporateText
+Text <|-- AdministratorText
+
+StudentDocumentElementFactory --- StudentText : creates >
+CorporateDocumentElementFactory --- CorporateText : creates >
+AdministratorDocumentElementFactory --- AdministratorText : creates >
+
+interface Table
+Table <|-- StudentTable
+Table <|-- CorporateTable
+Table <|-- AdministratorTable
+
+StudentDocumentElementFactory --- StudentTable : creates >
+CorporateDocumentElementFactory --- CorporateTable : creates >
+AdministratorDocumentElementFactory --- AdministratorTable : creates >
+
+interface Caption
+Caption <|-- StudentCaption
+Caption <|-- CorporateCaption
+Caption <|-- AdministratorCaption
+
+StudentDocumentElementFactory --- StudentCaption : creates >
+CorporateDocumentElementFactory --- CorporateCaption : creates >
+AdministratorDocumentElementFactory --- AdministratorCaption : creates >
+
+Document --- Heading : uses >
+Document --- Text : uses >
+Document --- Table : uses >
+Document --- Caption : uses >
+#+end_src
+
+#+RESULTS:
+[[file:allInheritance.png]]
+
+- Normally, we will not draw all these relations because it gets too messy.
+* Summary of Abstract Factory
+#+begin_src plantuml :file AbstractFactory.png
+Context - Factory
+
+interface Factory {
++createComponent1()
++createComponent2()
++createComponent3()
+}
+
+Factory <|-- ConcreteFactory1
+Factory <|-- ConcreteFactory2
+Factory <|-- ConcreteFactory3
+
+#+end_src
+
+#+RESULTS:
+[[file:AbstractFactory.png]]
+
+- /Encapsulate what varies/: the creation of objects
+- /Program to Interfaces/: Use references to the abstract interfaces, delegate creation to factories.
+- /Loose coupling/: The users of a factory do not know which concrete sub-class that is used for creation.
+- \sum /Depend on Abstractions/: We use interfaces to create a loosely coupled design.
+* Adapter
+- Sometimes, parts of the code is outside our control
+  - We may, for example, use a third party library
+  - Or, the code may be developed by a separate team
+- /If we are lucky/\dots
+  - there are stable and well defined interfaces to use
+  - we can work together to define those interfaces
+  - the interfaces fit with how we want to use the code
+- Otherwise, our code will need to know to things:
+  - What it is supposed to do
+  - How to deal with changing or unsuitable interfaces.
+
+For this, we use the /Adapter Design Pattern/.
+- The Adapter defines a stable interface
+- We can program to an interface -- the adapter -- and not the implementation.
+
+* Adapter Defined
+- Client :: All of our system
+- Target :: Defines the interface we want to use
+- Adapter :: Translates from our interface ~Target~ to the actual interface ~ExternalCode~
+- ExternalCode :: Whatever we wanted to adapt, e.g.
+  - A single class
+  - Several classes
+  - A Subsystem or a Package
+  - a REST API on some other server
+
+#+begin_src plantuml :file CDAdapter.png
+Client - Target
+
+interface Target {
++simple_and_stable_method_1()
++simple_and_stable_method_2()
++simple_and_stable_method_3()
+}
+
+Target <|-- Adapter  
+
+class Adapter {
++simple_and_stable_method_1()
++simple_and_stable_method_2()
++simple_and_stable_method_3()
+}
+
+Adapter - ExternalCode
+
+class ExternalCode {
++complexMethod1()
++doesNotFitMyWorkflow()
++justAddedInThisRelease()
+-usefulFeatureReplacedByComplexMethod1()
+}
+
+#+end_src
+
+#+RESULTS:
+[[file:CDAdapter.png]]
+
+* Facade
+- We write a adapters to make it easier to use other code
+- We provide a /facade/ with an easy-to-use interface into our code
+  - /Encapsulate/ our code structure
+  - c.f. the ~public~ declaration in a class
+
+#+begin_src ditaa :file AdapterFacade.png
+  +----------------+                +----------------+
+  | My Code        |                |     Other Code |
+  |         +------+------+  +------+----+           |
+  |         | Adapter cGRE|  |Facade cGRE|           |
+  |         +------+------+  +------+----+           |
+  |cBLU            |                |          cBLU  |
+  +----------------+                +----------------+
+#+end_src
+
+#+RESULTS:
+[[file:AdapterFacade.png]]
+
+A subsystem:
+- Can still expose other classes if someone needs them
+- May have several facades, e.g.
+  - one per user role
+  - one per use case
+- With a good enough facade, users of our code may not need to write an adapter
+* Adapter, Facade, and Decorator (oh my!)
+- Adapter /alters/ an interface to make it stable and better fit our needs
+- Facade provides a /simplified interface/ to make a subsystem easier to use
+- Decorator /adds functionality/ to a lower-level interface
+
+- Design Principle: /The Principle of Least Knowledge/
+  - "Talk only to your immediate friends"
+  - Use the adapters/facades, and try not to dig deeper.
+  - Avoid writing methods that expose internal design
+    - e.g. return an object that is only used to find another object, etc.
+
+#+begin_src c++
+  myCustomers->findCustomer(theCustomerName)
+  ->getTickets()->filterByTime("today")->first()->getDetails();
+#+end_src
+* Iterator
+- A collection should only do one thing: collect the elements.
+- As a user we do not need to know /how/ it collects the elements
+  - ArrayList<>
+  - Array
+  - Vector
+  - Set
+  - Bag
+  - Dictionary
+  - Tree
+  - HashMap
+  - \dots
+- We may need to access all elements in some order
+- We want to do this without knowing anything about the collection's internal structure
+
+#+begin_src plantuml :file Iterator.png
+
+Interface Iterator {
++hasNext()
++next()
++remove()
+}
+
+class Collection {
++createIterator()
+}
+
+class CollectionIterator {
+-Collection myCollection
++hasNext()
++next()
++remove()
+}
+
+note bottom
+ CollectionIterator only knows how to iterate one type of Collection
+ If you have other types of collections, e.g. a Vector, or Array, you
+ will need a VectorIterator, or an ArrayIterator.
+end note
+
+
+Iterator <|-- CollectionIterator
+
+Collection .> CollectionIterator : creates >
+
+Iterator <|-- VectorIterator
+Iterator <|-- ArrayIterator
+
+
+#+end_src
+
+#+RESULTS:
+[[file:Iterator.png]]
+
+* Using Iterators
+#+begin_src java :imports java.util.* java.util.stream.*
+  // Lists (of objects) have an iterator
+  List<Integer> intList = new ArrayList<Integer>();
+  Iterator<Integer> iter = intList.iterator();
+  while(iter.hasNext()) {
+    Integer element = iter.next();
+  }
+
+  for(Integer element : intList) { /* ... */  }
+
+  // As to other data structures, e.g. Maps
+  Map<String, Integer> stringHash = new HashMap<String, Integer>();
+  Iterator<String> stringIter = stringHash.keySet().iterator();
+  while(stringIter.hasNext()) { String element = stringIter.next(); }
+
+  iter = stringHash.values().iterator();
+  while(iter.hasNext()) { Integer element = iter.next(); }
+
+  // But what about an intArray?
+  // Arrays do not provide an iterator
+  // and especially not one for built-in datatypes.
+  int [] intArray = new int[10];
+
+  // We could use the streams API to convert
+  // our int[] to a List<Integer>
+  iter = IntStream
+    .of(intArray)                 // start with the int array
+    .boxed()                      // Convert to a stream of Integers
+    .collect(Collectors.toList()) // collect it as a List<Integer>
+    .iterator();                  // and get the iterator.
+
+  while(iter.hasNext()) {
+    Integer element = iter.next();
+    System.out.print(element.toString());
+  }
+
+  // But if we are already using streams, why not jump full in?
+  IntStream.of(intArray).forEach( (elem) -> { System.out.print(elem); } );
+#+end_src
+* Summary
+- Design Principle: /Open-Closed Principle/ 
+- Design Principle: /Depend on Abstractions/
+- Design Principle: /Encapsulation/
+- Design Principle: /High Cohesion/
+
+- A /Strategy/ for creating objects: /Abstract Factory/ Design Pattern
+- At the very least, /Encapsulate/ what may chage: /Factory Method/
+- More on /Encapsulate/ what may change: /Adapter/ Design Pattern
+- Using /High Cohesion/ to focus on one thing only: /Facade/ Design Pattern
+  - Focus on the domain, or
+  - Focus on the software design
+- /High Cohesion/ to split responsibilities:
+  - Maintaining a collection of objects (possibly from an inheritance hierarchy)
+  - Iterating over the collection: /Iterator/ Design Pattern
