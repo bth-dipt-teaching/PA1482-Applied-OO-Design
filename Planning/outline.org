@@ -1,0 +1,166 @@
+* Contents
+- Object Oriented Programming in Java
+- Overview of Object Oriented Programming in C++
+- Basic Input and Output
+- Basic Exception handling
+- Object Oriented Analysis and Design
+- Objects and Classes
+- Methods and Constructors
+- Interaction between Objects, Relations between Classes
+- Collections of Objects
+- Inheritance and Polymorphism
+- Fundamental design principles such as low coupling, high cohesion, encapsulation.
+- Structuring of Classes and Packages
+- Object Oriented Design Patterns
+* Learning Outcomes
+- *Learning outcomes*; The following learning outcomes are examined in the course:
+  1. Knowledge and understanding;  On completion of the course, the student will be able to:
+     - In depth explain basic concepts and techniques in object oriented programming and design.
+     - Understand and in depth explain design and program code for a simple object oriented system.
+  2. Competence and skills;  On completion of the course, the student will be able to:
+     - Structure a problem solution for a smaller system with the help of classes and present it in a class diagram.
+     - Apply design patterns to create a maintainable object oriented design.
+     - Implement a small object oriented system according to a specific design.
+     - Use the standard libraries for the programming language.
+  3. Judgement and approach;  On completion of the course, the student will be able to:
+     - Analyse and discuss a design and program code for potential improvements.
+* Lecture Outline
+** Course Introduction
+   - Contents, teaching team etc.
+   - Assignments
+   - Java without BlueJ (Appendix E)
+     - compiler
+     - main method
+     - ...
+** *programming* Java Fundamentals (ch1, ch2), C++ Fundamendals
+   - Objects and Classes
+   - Method calls /on objects/
+   - Object state
+   - Class Definitions, method definitions, parameters, return values
+     - public, private, protected
+     - getters and setters
+     - paramters, attributes, local variables
+     - Constructors
+   - Builtin data types vs Objects
+     - a brief introduction to the heap
+   - Variable declaration, what is actually declared in e.g. ~private SomeClass myVar = new SomeClass()~
+     - Left hand is /just/ a pointer.
+     - Only with the right hand do we create an object.
+   - Conditional: ~if~
+   - System.out.println
+   - System.in.readln
+** *programming* Interacting Objects (ch 3)
+   - Design principle: high cohesion
+   - Design principle: Encapsulation (ch 8)
+   - Object Oriented Analysis (Seeing the world as Objects)
+   - clock example: What is a suitable level of abstraction, big enough object?
+   - objects creating objects
+   - method calls
+   - ~*this~
+** *design* Designing Applications (ch 15) and UML Class Diagrams
+   - Starting point for OO Design & Design Patterns
+   - Not so much from ch 15, more about class diagrams and UML in general.
+   - Think in terms of classes and relations *instantiated as interacting objects*
+   - What is a class, what is just another object instance?
+*** *programming* Collections of Objects (ch 4, ch 7)
+   - Arrays (ch 7)
+   - Standard Library: Overview, how to navigate, how to use.
+   - std::Vector, java.util.ArrayList, Vector, set, ...
+   - Iterating over collection ~for( : )~ (for-each)
+   - ~while~, ~for~
+   - just mention: two-dim arrays
+   - Conditionals and Loops (~ch 2)
+     - if
+     - while
+     - for
+     - foreach
+     - also: Switch/case
+** *programming/design* Inheritance and Polymorphism
+   - Design Principle: Low Coupling (ch 8)
+   - Design Principle: Encapsulation (ch 8)
+   - Java Interfaces, C++ Abstract classes
+   - Polymorphism: Holding a reference to a supertype.
+   - Polymorphism: same method name, different implementations.
+   - Give example, show why it is useful in e.g. a collection (encapsulation etc.).
+   - Polymorhphism as another type of conditional: /trust the compiler/
+   - Multiple Inheritance: Interfaces
+** *design* Design Patterns: Strategy pattern
+   - When everything is in a list, how to avoid knowing what is what?
+   - Head first design patterns, Intro chapter
+   - *Strategy Pattern*
+   - Shared Vocabulary
+   - Pattern Libraries
+   - OO basics and principles (page 32)
+** *design* Responsibility-Driven Design (ch 8), *Well-behaved Objects (ch9)*
+   - Design Principle: Low Coupling (ch 8)
+   - Design Principle: Encapsulation (ch 8)
+   - Design Principle: Localising Change (High Cohesion) (ch 8)
+   - Which class should be responsible for method/data?
+   - Code Duplication -> New method/class
+   - Refactoring
+   - Size/Length of class / method => answered with cohesion&coupling
+   - Structuring of classes and Packages (ch 6) 
+     - C++ namespace
+     - Java package (public class, private class)
+   - ~import~
+** *design* Design Patterns: Observer, Decorator
+   - Head First Design Patterns, Observer pattern chapter
+   - *Observer*
+   - Some extra interfaces (e.g. displayable)
+   - => *Loose Coupling*
+   - Head First Design Patterns, Decorator pattern chapter
+   - => *Open-Closed Principle*
+** *programming* Pointers and References, Constructors and Destructors
+    1. [X] *programming* C++ Pointers
+       1. Pointer
+       2. pointer to object, pointer to value
+       3. dereferencing pointer *
+       4. address of item/object &
+       5. pointers and arrays
+       6. auto-pointers etc.
+       7. null-pointers
+       8. passing pointers as parameters
+       9. pass-by-reference, pass-by-value
+    2. [X] *programming* Java and C++ Strings, Identity and Equality
+       - Constant
+       - use ~equals()~ 
+       - compare with C++ std::string (where ~==~ works, but may not work for other objects, especially those you have defined yourself)
+         - a brief overview of operator overloading
+       - Shallow equal (same object) *identity*
+       - Deep equal (same contents) *equality*
+** *programming* Exceptions and File IO (ch9, ch 14)
+    1. [X] *programming* Exception Handling (ch 9, 14)
+       1. Encapsulation
+       2. Input Sanitisation: Never assume input/network/files/external services are ok
+       3. Testing and Debugging
+       4. Error Reporting vs Error Handling
+       5. Runtime Errors vs Compile time Errors
+       6. Where to report errors
+          - User
+          - log files
+          - calling object (eg. return -1 for error)
+          - Throw an exception
+            - ~throw new Throwable~, ~try-catch-finally~
+            - pass it on: ~public void myMethod() throws IOException~
+          - ~assert~ for testing
+    2. [X] *programming* File IO (ch 14)
+       - java.io.File
+       - java.nio.file.Path
+       - Readers and writers...
+** *design* Design Patterns: Factory and so on
+    - Head First Design Patterns, Factory
+      - SimpleFactory; not actually the Factory pattern.
+      - Factory method
+      - => Dependency Inversion
+      - Abstract Factory
+    - And so on. From here on out, I can re-use existing slides.
+* Assignments
+<2023-10-31 tis> TBD, current idea is two submissions:
+
+1. Design (using Design Patterns); Deliver class diagram with reflections
+   - Analysis with respect to design principles
+   - Motivate choice of design patterns
+   - Explain how design patterns are used
+2. Implement (using Design and (some) standard libraries); Deliver source code with reflections
+   - Analysis with respect to design principles
+   - Reflections on how design translates to code
