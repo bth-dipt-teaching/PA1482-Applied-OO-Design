@@ -31,8 +31,8 @@ The following learning outcomes are examined in the course:
      - Analyse and discuss a design and program code for potential improvements.
 
 ## Course Book
-Barnes, Kolling "Objects First with Java", Sixth Edition, Pearson 2016. ISBN (Global Edition): 978-1-292-15904-1
-Freeman & Robson "Head First Design Patterns", 2nd Edition, O'Reilly 2020. ISBN: 9781492078005
+- Barnes, Kolling "Objects First with Java", Sixth Edition, Pearson 2016. ISBN (Global Edition): 978-1-292-15904-1
+- Freeman & Robson "Head First Design Patterns", 2nd Edition, O'Reilly 2020. ISBN: 9781492078005
 
 ![Kolling](./Lectures/01-Introduction/IBarnes-Kolling.png)
 ![Freeman-Robson](./Lectures/01-Introduction/IFreeman-Robson.png)
@@ -59,8 +59,8 @@ Freeman & Robson "Head First Design Patterns", 2nd Edition, O'Reilly 2020. ISBN:
    - [Tornsvala](https://codeberg.org/mickesv/Tornsvala) REPL and GUI that may be used together with the students' implementations.
 
 ## Written Exam
-   - TODO Previous Exams
+   - TODO Previous Exams (none available yet)
 
 ## Operational Data
-   - TODO Course Evaluations
+   - TODO Course Evaluations (none available yet)
 
