@@ -423,7 +423,7 @@ Customer - "*" Ticket : myTickets >
     System.out.println(q.currentElement());
   }
 
-  for (Iterator<Ticket> it = myTickets.iterator() ; it.hasNext() ; /* empty incrment */ ) {
+  for (Iterator<Ticket> it = myTickets.iterator() ; it.hasNext() ; /* empty increment */ ) {
     Ticket t = it.next();
     // ...
   }

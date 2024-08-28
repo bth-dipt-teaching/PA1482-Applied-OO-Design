@@ -53,7 +53,7 @@ The following learning outcomes are examinded in the course:
 
 - Barnes, Kolling "Objects First with Java", Sixth Edition, Pearson 2016. ISBN (Global Edition): 978-1-292-15904-1
 - Freeman & Robson "Head First Design Patterns", 2nd Edition, O'Reilly 2020. ISBN: 9781492078005 
-* Assignments
+* TODO Assignments
 Two main themes:
 1. Design (using Design Patterns)
 2. Implement (according to a design and (some) standard libraries)
@@ -82,6 +82,7 @@ Examples of Development Environments:
 - BlueJ https://www.bluej.org/
 - IntelliJ https://www.jetbrains.com/idea/
 - Emacs https://www.gnu.org/software/emacs/
+- VS Codium https://vscodium.com/
 - \dots
 - Vim https://www.vim.org/
 
@@ -160,7 +161,7 @@ Or, we may take a different approach.
 #+end_src
 
 - In both these examples, we have created an /Object/ ~p1~.
-- ~p1~ contains three datum, name, phoneNumber, and address.
+- ~p1~ contains three datum; name, phoneNumber, and address.
 - We can create another Object, ~p2~ which may contain a different name, phoneNumber, and address.
 - In fact, we can create a whole collection of ~Person~ objects.
 ** Objects: Encapsulating Behaviour

@@ -407,7 +407,7 @@ A subsystem:
   - one per user role
   - one per use case
 - With a good enough facade, users of our code may not need to write an adapter
-* Adapter, Facade, and Decorator (oh my!)
+* Adapter, Facade, and Decorator
 - Adapter /alters/ an interface to make it stable and better fit our needs
 - Facade provides a /simplified interface/ to make a subsystem easier to use
 - Decorator /adds functionality/ to a lower-level interface
