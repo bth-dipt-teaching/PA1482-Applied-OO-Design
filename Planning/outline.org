@@ -62,7 +62,7 @@
    - Not so much from ch 15, more about class diagrams and UML in general.
    - Think in terms of classes and relations *instantiated as interacting objects*
    - What is a class, what is just another object instance?
-*** *programming* Collections of Objects (ch 4, ch 7)
+** *programming* Collections of Objects (ch 4, ch 7)
    - Arrays (ch 7)
    - Standard Library: Overview, how to navigate, how to use.
    - std::Vector, java.util.ArrayList, Vector, set, ...
