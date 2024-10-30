@@ -192,7 +192,8 @@ The follwing is part of the assessment, and is weighed together to a grade on th
   - 5 Pts :: There is a clear and complete mapping between the design and the implementation. All deviations are documented.
   - 4 Pts :: (intermediate)
   - 3 Pts :: There is a clear mapping between the most of the design and the most of the implementation. Most deviations are documented.
-  - 2 Pts :: (intermediate)
+  - 2 Pts :: There is a mapping between the most of the design and the most of the implementation. Some deviations are documented.
+  - 1 Pts :: (intermediate)
   - 0 Pts :: There are obvious gaps in the implementation where the design is not implemented as described. Deviations are not documented.
 * Lost Puppies :noexport:
 ** Assignment at a Glance: Bugs-R-Us
