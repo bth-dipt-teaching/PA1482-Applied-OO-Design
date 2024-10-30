@@ -39,37 +39,43 @@ The following learning outcomes are examinded in the course:
 
 *Judgement and approach*	On completion of the course, the student will be able to:
 - Analyse and discuss a design and program code for potential improvements.
-* TODO Course Structure
-  - Modules
-    - Readings
-    - Lectures
-      - Video Lectures
-      - Classroom Lectures
-    - Things to do
-  - Assignments
+* Course Structure
+Lectures
+  -  /Lecture Plan/ on Canvas
+  - Contains reading instructions
+
+Assignments
+  0. [@0] Early Design Sketch
+     - Not graded
+     - Early ideas on how to design the system, to get feedback
+     - *Used as three week Roll Call*
+  1. Software Design
+     - Graded (see rubric on Canvas)
+     - Design of a system, using design patterns.
+  2. Implementation
+     - Graded (see rubric on Canvas)
+     - Implement the designed system
+     - Working Software? Adherence to design?
+
+Assignment Submissions
+- Submit your work in groups of 3-5 students.
+- Deadlines on Canvas
+- Resubmissions:
+  - Within two weeks after course ends.
+  - Same dates as the re-exams
+
+*Written Exam*
+
 * Literature
 #+ATTR_ORG: :width 400
 [[./PA1482-Books.png]]
 
 - Barnes, Kolling "Objects First with Java", Sixth Edition, Pearson 2016. ISBN (Global Edition): 978-1-292-15904-1
 - Freeman & Robson "Head First Design Patterns", 2nd Edition, O'Reilly 2020. ISBN: 9781492078005 
-* TODO Assignments
-Two main themes:
-1. Design (using Design Patterns)
-2. Implement (according to a design and (some) standard libraries)
-
-Delivered as a series of (more than two) assignments. */Some/ but not all are graded.*
-
-Submissions:
-- Submit your work in groups of 3-5 students.
-- Deadlines on Canvas
-
-Resubmissions:
-- Within two weeks after course ends.
-- Same dates as the re-exams
 * Tools
 - You will need a Java Development Kit
   - e.g. OpenJDK https://openjdk.org/ .
+  - May be possible to install as a package inside VSCode.
 - You may also wish to install a C/C++ compiler
   - e.g. gcc https://gcc.gnu.org/
 - Make sure that the Java version you install is compatible with your IDE
@@ -79,10 +85,11 @@ Resubmissions:
   - https://cmake.org/ 
 
 Examples of Development Environments:
+- VS Code (Probably already installed)
 - BlueJ https://www.bluej.org/
+- VS Codium https://vscodium.com/
 - IntelliJ https://www.jetbrains.com/idea/
 - Emacs https://www.gnu.org/software/emacs/
-- VS Codium https://vscodium.com/
 - \dots
 - Vim https://www.vim.org/
 

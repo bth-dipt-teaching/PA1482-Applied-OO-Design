@@ -228,6 +228,9 @@ Today, we start in C++.
     if (0 != oldName) {
       cout << oldName << " is now known as " << myName << endl;
     }
+
+    // need to free oldName, otherwise you have a memory leak. There is no garbage collector in C++
+    delete [] oldName;
   }
 
   string Cat::toString(void) const {

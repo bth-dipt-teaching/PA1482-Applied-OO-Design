@@ -390,7 +390,7 @@ Classes have:
     return localVar;
 
   } // End of this method block
-    // Back up the stack with 64 bits for c3 and four bytes for localVar
+    // Back up the stack with 32 bits for c3 and four bytes for localVar
     // The Car formely referred to by c3 is now "free" and goes to the garbage collector.
     // Push the value previously stored in localVar onto the stack, where it will be 
     // retrieved by wherever someMethod() was called.
