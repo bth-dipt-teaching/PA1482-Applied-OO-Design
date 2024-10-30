@@ -1,0 +1,25 @@
+
+* Spring 2025
+Spring 2025 lp3: Week 04-13 <2025-01-20 mån> - <2025-03-30 sön>
+
+| Week | Lecture                                 | Focus              | Assignment                    |
+|------+-----------------------------------------+--------------------+-------------------------------|
+|   04 | 1. Introduction                         |                    |                               |
+|      | 2. Fundamentals                         | Programming        |                               |
+|      | 3. Interacting Objects                  | Programming        |                               |
+|   05 | 4. Class Diagrams                       | Design             |                               |
+|      | 5. Collections of Objects               | Programming        |                               |
+|      | 6. Inheritance and Polymorphism         | Programming/Design | Early Design Sketch           |
+|   06 | 7. Design Patterns: Strategy            | Design             |                               |
+|      | 8. Responsibility-Driven Design         | Design             |                               |
+|      | 9. Design Patterns: Observer, Decorator | Design             |                               |
+|   07 | 10. Pointers and References             | Programming        |                               |
+|      | 11. Exceptions and File IO              | Programming        |                               |
+|      | 12. More Design Patterns                | Design             | Submit Design and Reflections |
+|   08 | ()                                      |                    |                               |
+|   09 |                                         |                    |                               |
+|   10 | 13. Buffer/Exam Discussions             |                    | Submit & Demo Implementation  |
+|   11 | 14. Buffer/Exam Discussions             |                    |                               |
+|   12 | () Exam week                            |                    |                               |
+|   13 | () Exam week                            |                    |                               |
+|------+-----------------------------------------+--------------------+-------------------------------|
