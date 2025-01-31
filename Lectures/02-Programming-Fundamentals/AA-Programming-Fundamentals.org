@@ -4,7 +4,7 @@
 #+Date: 2023-08-21
 #+EPRESENT_FRAME_LEVEL: 1
 #+OPTIONS: email:t <:t todo:t f:t ':t H:2
-#+STARTUP: beamer
+#+STARTUP: beamer num
 
 #+LATEX_CLASS_OPTIONS: [10pt,t,a4paper]
 #+BEAMER_THEME: BTH_msv
@@ -390,7 +390,7 @@ Classes have:
     return localVar;
 
   } // End of this method block
-    // Back up the stack with 32 bits for c3 and four bytes for localVar
+    // Back up the stack with 64 bits for c3 and four bytes for localVar
     // The Car formely referred to by c3 is now "free" and goes to the garbage collector.
     // Push the value previously stored in localVar onto the stack, where it will be 
     // retrieved by wherever someMethod() was called.
@@ -424,26 +424,26 @@ Classes have:
 #+end_src
 * Conditional Execution: if
 #+begin_src java
-  // Basic form:
-  if ( /* some true or false test */ ) {
-    // Code to run if true
-  }
+    // Basic form:
+    if ( /* some true or false test */ ) {
+      // Code to run if true
+    }
 
-  // With an 'else':
-  if ( /* some true or false test */ ) {
-    // Code to run if test is true
-  } else {
-    // Code to run if test is false
-  }
+    // With an 'else':
+    if ( /* some true or false test */ ) {
+      // Code to run if test is true
+    } else {
+      // Code to run if test is false
+    }
 
-  // Daisy-chaining
-  if ( /* some true or false test */ ) {
-    // Code to run if test is true
-  } else if ( /* some other true or false test */) {
-    // Code to run if the first test is false AND the second test is true
-  } else {
-    // Code to run if the first test is false AND the second test is false
-  }
+    // Daisy-chaining
+    if ( /* some true or false test */ ) {
+      // Code to run if test is true
+    } else if ( /* some other true or false test */) {
+      // Code to run if the first test is false AND the second test is true
+    } else {
+      // Code to run if the first test is false AND the second test is false
+    }
 #+end_src
 
 #+begin_src java :file Car

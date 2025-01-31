@@ -3,9 +3,9 @@
 #+Author: Mikael Svahnberg
 #+Email: Mikael.Svahnberg@bth.se
 #+EPRESENT_FRAME_LEVEL: 1
-#+OPTIONS: email:t <:t todo:t f:t ':t H:1 toc:nil
+#+OPTIONS: email:t <:t todo:t f:t ':t H:2 toc:nil
 # #+STARTUP: showall
-#+STARTUP: beamer
+#+STARTUP: beamer num
 
 #+LATEX_CLASS_OPTIONS: [10pt,t,a4paper]
 #+BEAMER_THEME: BTH_msv
@@ -48,7 +48,6 @@ Assignments
   0. [@0] Early Design Sketch
      - Not graded
      - Early ideas on how to design the system, to get feedback
-     - *Used as three week Roll Call*
   1. Software Design
      - Graded (see rubric on Canvas)
      - Design of a system, using design patterns.

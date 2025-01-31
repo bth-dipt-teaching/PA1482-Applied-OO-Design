@@ -4,7 +4,7 @@
 #+Date: 2023-08-22
 #+EPRESENT_FRAME_LEVEL: 1
 #+OPTIONS: email:t <:t todo:t f:t ':t H:2
-#+STARTUP: beamer
+#+STARTUP: beamer num
 
 #+LATEX_CLASS_OPTIONS: [10pt,t,a4paper]
 #+BEAMER_THEME: BTH_msv
@@ -37,7 +37,7 @@
 
 - Private implementation:
   - Attributes to represent the object's state
-  - "helper" methods used by the public interface method.
+  - "helper" methods used by the public interface methods.
   - Associations to other objects that are accessed via /their/ public interface.
 
 - Note that in Java, the implementation is mixed with the interface.
@@ -130,7 +130,7 @@
 - We /could/ put all of this logic into the ~update()~ function.
   - We would have a very specialised clock, but no flexibility.
   - One long method with all the logic in one difficult to overview place.
-- We /could also/ write a separate class for seconds, minutes, and hours
+- We /could also/ write separate classes for each of seconds, minutes, and hours
   - The program code would be almost the same.
   - Find a bug in one place, figure out all other places to modify
   - /Be lazy/. Can you generalise the behaviour?
