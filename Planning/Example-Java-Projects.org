@@ -1,0 +1,85 @@
+#+Title: Exempel på Java-Projekt
+#+Author: Mikael Svahnberg
+#+Email: Mikael.Svahnberg@bth.se
+#+Date: 2025-01-27
+#+EPRESENT_FRAME_LEVEL: 1
+#+OPTIONS: email:t <:t todo:t f:t ':t H:2
+#+STARTUP: beamer
+
+#+LATEX_CLASS_OPTIONS: [10pt,t,a4paper]
+#+BEAMER_THEME: BTH_msv
+
+
+* SorterTool
+- Länk till Projektet: https://codeberg.org/mickesv/SorterTool
+
+Det här är ett väldigt litet projekt, egentligen gjort för att öva sig på att använda en debugger. Det består av två klasser; ~Main~ för att starta programmet, och ~Sorter~ som implementerar ett par olika sorteringsalgoritmer (varav en felaktigt). Det finns också enhetstester i katalogen ~Tests~ för den nyfikne.
+
+** Bygga och köra SorterTool
+#+begin_src bash
+cd src
+javac *.java
+java Main
+#+end_src
+** Main-klassen
+Några nämnvärda punkter:
+
+- Jag vill ha ett antal slumpvisa tal, så jag importerar och använder ~java.util.Random~
+- Jag har valt att göra alla metoder ~public static~ , så man behöver inte skapa ett objekt av ~Main~ - klassen utan kan anropa dem direkt.
+- På rad =25= börjar ~main()~ - funktionen; den gör inget avancerat utan ställer bara upp det som behövs och lämnar snabbt över till ett objekt ~s:Sorter~ (läs detta som "ett objekt av typen ~Sorter~, som ligger i variabeln ~s~").
+* JavaPonies
+- Länk till Projektet: https://codeberg.org/mickesv/JavaPonies
+
+Ett lite större projekt, där man kan låta ett antal MLP-ponnier springa runt på skärmen. I katalogen ~src~ finner ni tre saker:
+
+- filen ~JavaPonies.java~ som startar programmet. på rad =50= finner ni en ytterst kort ~main()~ -funktion, som bara skapar ett objekt och inget mer. Resten av uppstarten sker i konstruktorn (rad =28=) där man 
+
+  1. Läser in en inställningsfil
+  2. Skapar en samling som skall innehålla alla ponnier
+  3. Skapar ett GUI-fönster som skall visa alla ponnier
+  4. Låter ponny-samlingen läsa in alla ponnier utifrån de instruktioner som finns i inställningsfilen.
+  5. Ger referenser till alla ponnier till GUI-fönstret så att de kan visas.
+
+- Paketet ~model~ där klasserna som hanterar alla ponnier finns. På det här viset håller jag isär själva "att vara en ponny" från "att visa en ponny".
+- Paketet ~view~ där klasserna som hanterar allt för det grafiska gränssnittet finns. Här är fokus "att visa en ponny".
+  - Notera i ~MainWindow::loadPonies()~ att visningen av alla ponnier bara lånar en /referens/ till Ponnierna, som skapas, hanteras, och "bor" i paketet ~model~.
+  - Notera också att för att kunna arbeta med en ponny behöver vi känna till hur klassen se ut. Till exempel på rad =9= i ~MainWindow~ importerar vi klasssen ~model.Pony~ . Även om vi aldrig använder oss av någonting i ~Pony~ - klassen här, så måste java veta /vilken/ ~Pony~ - klass som refereras till på rad =30= och =31=.
+  - Notera vidare att det här är bara nödvändigt för klasser från utanför det egna paketet. ~view.PonyCard~ behöver till exempel inte importeras.
+
+** Bygga och Köra JavaPonies
+Det här blir lite mer komplicerat eftersom vi vill bygga allt i katalogen ~src~ och separera det färdiga programmet till en katalog ~out~ . Då vill vi också instruera java att det går bra att köra programmet som ligger i ~out~. Så här använder jag en ~makefile~ . Det här är en ganska generisk makefile så den är inte så lätt att läsa, men reglerna som kan köras är: all, ~$(classes)~, doc, clean, run, och stats. ~$(classes)~ kommer ersättas enligt regeln på rad =5= så att för varje fil ~src/filnamn.java~ kommer det bli ett element ~out/filnamn.class~ (plus lite mer magi för att få tag i filerna i paketen ~model~ och ~view~ också).
+
+Således, för att bygga projektet: ~make all~ , och för att köra det: ~make run~ .
+
+** Överkurs
+Det finns en separat förgrening ("branch" på git-språk) , ~statMain~ , där jag använder mig av samma klasser men där jag istället bara skriver ut statistik om alla ponnier.
+
+Projektet finns också implementerat i JavaScript med Electron, för den nyfikne: https://github.com/mickesv/JSPonies
+* Tornsvala
+- Länk till Projektet: https://codeberg.org/mickesv/Tornsvala
+
+Det här är en grund till det projekt ni arbetar med i den här kursen; som bara innehåller "skalet" för att starta programmet, men lämnar själva implementationen öppen. I katalogen ~src~ finner ni:
+
+- ~Start.java~ som bara innehåller ~main()~ - funktionen. Den startar alltid både ett grafiskt gränssnitt (GUI) och en kommandoradstolk (en REPL), och kopplar dem till ett och samma objekt av typen ~Tornsvala~.
+- ~Gui.java~ som sätter upp ett grafiskt gränssnitt som arbetar mot det givna ~Tornsvala~ - objektet.
+- ~Repl.java~ gör samma sak, fast med input/output från konsollen.
+- ~Tornsvala.java~ är en /början/ på den kod som ni kommer skriva. Den är inte färdig, en del metoder saknar vettigt innehåll, andra returnerar hårdkodade svar, och den använder sig inte av några andra objekt än. Men de metoder som just nu förväntas från GUI och REPL finns där. Tanken är att ni skall inte behöva röra Start, GUI, eller REPL, utan ni börjar införa era förändringar från och med klassen ~Tornsvala~.
+
+** Bygga och Köra Tornsvala
+I root-katalogen till projektet finns en ~makefile~; den innehåller reglerna all, ~$(classes)~ , doc, clean, och run.
+
+Således, för att bygga projektet: ~make all~ , och för att köra det: ~make run~ . En liten dold feature i ~make~ är att om man inte säger något så kommer den använda sig av den första regeln den hittar i ~makefile~, så om man bara skriver ~make~ så kommer regeln ~make all~ köras.
+* Java for the Reluctant
+- Länk till Projektet: https://github.com/mickesv/Reluctant-Java
+- Länk till mini-föreläsningarna: https://www.youtube.com/playlist?list=PLRyU9jMTRIX7QUrxZF9HNLbdXtiv6F9MT
+
+Det här är en kort videoserie i sju korta miniföreläsningar där jag går igenom Java för studenter som redan borde kunna en del om t.ex. C++. Föreläsningarna täcker in:
+
+- Klasser och Objekt
+- Att anropa objekt
+- Arrayer
+- Arv ~extends~
+- Arv ~implements~
+- Strängar
+- Input och Output
+- Grafiskt användargränssnitt
