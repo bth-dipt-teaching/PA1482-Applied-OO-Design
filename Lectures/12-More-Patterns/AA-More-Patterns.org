@@ -228,7 +228,7 @@ end note
       if (userRole.equals("Student")) {
         docFactory = new StudentDocumentElementFactory();
       } else if (userRole.equals("Corporate")) {
-        docFactory = new StudentDocumentElementFactory();
+        docFactory = new CorporateDocumentElementFactory();
       } /* ... and so on for the rest of the roles */
     }
 
@@ -252,6 +252,7 @@ scale 0.7
 DocumentManager -- DocumentElementFactory
 DocumentManager - Document
 
+interface DocumentElementFactory
 DocumentElementFactory <|-- StudentDocumentElementFactory
 DocumentElementFactory <|-- CorporateDocumentElementFactory
 DocumentElementFactory <|-- AdministratorDocumentElementFactory
@@ -261,41 +262,49 @@ Heading <|-- StudentHeading
 Heading <|-- CorporateHeading
 Heading <|-- AdministratorHeading
 
-StudentDocumentElementFactory --- StudentHeading : creates >
-CorporateDocumentElementFactory --- CorporateHeading : creates >
-AdministratorDocumentElementFactory --- AdministratorHeading : creates >
+'StudentDocumentElementFactory --- StudentHeading : creates >
+'CorporateDocumentElementFactory --- CorporateHeading : creates >
+'AdministratorDocumentElementFactory --- AdministratorHeading : creates >
 
 interface Text
 Text <|-- StudentText
 Text <|-- CorporateText
 Text <|-- AdministratorText
 
-StudentDocumentElementFactory --- StudentText : creates >
-CorporateDocumentElementFactory --- CorporateText : creates >
-AdministratorDocumentElementFactory --- AdministratorText : creates >
+'StudentDocumentElementFactory --- StudentText : creates >
+'CorporateDocumentElementFactory --- CorporateText : creates >
+'AdministratorDocumentElementFactory --- AdministratorText : creates >
 
 interface Table
 Table <|-- StudentTable
 Table <|-- CorporateTable
 Table <|-- AdministratorTable
 
-StudentDocumentElementFactory --- StudentTable : creates >
-CorporateDocumentElementFactory --- CorporateTable : creates >
-AdministratorDocumentElementFactory --- AdministratorTable : creates >
+'StudentDocumentElementFactory --- StudentTable : creates >
+'CorporateDocumentElementFactory --- CorporateTable : creates >
+'AdministratorDocumentElementFactory --- AdministratorTable : creates >
 
 interface Caption
 Caption <|-- StudentCaption
 Caption <|-- CorporateCaption
 Caption <|-- AdministratorCaption
 
-StudentDocumentElementFactory --- StudentCaption : creates >
-CorporateDocumentElementFactory --- CorporateCaption : creates >
-AdministratorDocumentElementFactory --- AdministratorCaption : creates >
+'StudentDocumentElementFactory --- StudentCaption : creates >
+'CorporateDocumentElementFactory --- CorporateCaption : creates >
+'AdministratorDocumentElementFactory --- AdministratorCaption : creates >
 
-Document --- Heading : uses >
-Document --- Text : uses >
-Document --- Table : uses >
-Document --- Caption : uses >
+interface DocumentElement
+DocumentElement <|-- Heading
+DocumentElement <|-- Text
+DocumentElement <|-- Caption
+DocumentElement <|-- Table
+
+'Document --- Heading : uses >
+'Document --- Text : uses >
+'Document --- Table : uses >
+'Document --- Caption : uses >
+
+Document -- "*" DocumentElement
 #+end_src
 
 #+RESULTS:

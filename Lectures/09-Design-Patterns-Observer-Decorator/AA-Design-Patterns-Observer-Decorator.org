@@ -4,7 +4,7 @@
 #+Date: 2023-09-15
 #+EPRESENT_FRAME_LEVEL: 1
 #+OPTIONS: email:t <:t todo:t f:t ':t H:2
-#+STARTUP: beamer
+#+STARTUP: beamer num
 
 #+LATEX_CLASS_OPTIONS: [10pt,t,a4paper]
 #+BEAMER_THEME: BTH_msv
@@ -250,7 +250,7 @@ Observer <|-- PrognosisGenerator
 - Or, we create an object
 - Or, we fetch it from somewhere else
 
-- we should store the ~DataPublisher~ object in a private attribute
+- we may store the ~DataPublisher~ object in a private attribute
   - In case we need access to the object in order to read the updated data
   - In case we want to remove ourselves as Observers.
 - We could also change the ~update()~ method:
