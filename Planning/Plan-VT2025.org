@@ -23,3 +23,6 @@ Spring 2025 lp3: Week 04-13 <2025-01-20 mån> - <2025-03-30 sön>
 |   12 | () Exam week                            |                    |                               |
 |   13 | () Exam week                            |                    |                               |
 |------+-----------------------------------------+--------------------+-------------------------------|
+
+** TODO Spring 2026
+Maybe move deadline for Early Design Sketch one week later?
