@@ -252,7 +252,7 @@ Today, we start in C++.
   void Cat::copyColours(const string* theColours) {
     int length=0;
     while ("" != theColours[length++]) {}
-    myColours = new string[length];
+    myColours = new string[length]; // Careful here! We just introduced a memory leak!
 
     int pos=0;
     do {

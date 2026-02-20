@@ -140,6 +140,7 @@ Document <|-- CorporateProtocolDocument
 Document <|-- CorporateEmptyDocument
 #+end_src
 
+#+ATTR_ORG: :width 1600
 #+RESULTS:
 [[file:CDFactoryMethod.png]]
 
@@ -168,6 +169,7 @@ Product <|-- ConcreteProduct3
 Product <|-- ConcreteProduct4
 #+end_src
 
+#+ATTR_ORG: :width 1024
 #+RESULTS:
 [[file:FactMethSummary.png]]
 
@@ -307,6 +309,7 @@ DocumentElement <|-- Table
 Document -- "*" DocumentElement
 #+end_src
 
+#+ATTR_ORG: :width 1800
 #+RESULTS:
 [[file:allInheritance.png]]
 

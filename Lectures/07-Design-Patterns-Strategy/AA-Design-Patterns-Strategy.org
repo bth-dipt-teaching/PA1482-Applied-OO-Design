@@ -138,6 +138,7 @@ write them out here.
 end note
 #+end_src
 
+#+ATTR_ORG: :width 900px
 #+RESULTS:
 [[file:CD-Separate.png]]
 * Summary: Strategy Pattern
@@ -202,6 +203,7 @@ create the currentStrategy object !!
 end note
 #+end_src
 
+#+ATTR_ORG: :width 800px
 #+RESULTS:
 [[file:CD-Strategy.png]]
 
