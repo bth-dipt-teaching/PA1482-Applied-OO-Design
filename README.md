@@ -1,3 +1,7 @@
+> [!IMPORTANT]
+> This repository is archived and has moved to https://codeberg.org/mickesv/PA1482-Applied-OO-Design.git
+
+
 # PA1482: Applied Object Oriented Design
 
  - [Course Syllabus](https://edu.bth.se/utbildning/utb_kursplaner.asp?sok=pa1482)
